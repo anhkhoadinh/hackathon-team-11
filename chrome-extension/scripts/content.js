@@ -47,7 +47,9 @@ window.addEventListener("message", (event) => {
     updateStatus("Ready to record", "");
     isRecording = false;
     document.getElementById("meeting-ai-start").style.display = "block";
-    document.getElementById("meeting-ai-stop").style.display = "none";
+    document.getElementById("meeting-ai-recording-controls").style.display =
+      "none";
+    document.getElementById("meeting-ai-resume").style.display = "none";
     stopTimer();
   }
 });
@@ -78,8 +80,16 @@ function createOverlay() {
         <button id="meeting-ai-start" class="meeting-ai-btn meeting-ai-btn-primary">
           Start Recording
         </button>
-        <button id="meeting-ai-stop" class="meeting-ai-btn meeting-ai-btn-danger" style="display: none;">
-          Stop Recording
+        <div id="meeting-ai-recording-controls" style="display: none; gap: 8px;">
+          <button id="meeting-ai-pause" class="meeting-ai-btn meeting-ai-btn-warning">
+            Pause
+          </button>
+          <button id="meeting-ai-stop" class="meeting-ai-btn meeting-ai-btn-danger">
+            Stop
+          </button>
+        </div>
+        <button id="meeting-ai-resume" class="meeting-ai-btn meeting-ai-btn-primary" style="display: none;">
+          Resume
         </button>
       </div>
       <div id="meeting-ai-transcript" class="meeting-ai-transcript" style="display: none;">
@@ -136,10 +146,14 @@ function makeDraggable(element) {
 // Setup event listeners
 function setupEventListeners() {
   const startBtn = document.getElementById("meeting-ai-start");
+  const pauseBtn = document.getElementById("meeting-ai-pause");
+  const resumeBtn = document.getElementById("meeting-ai-resume");
   const stopBtn = document.getElementById("meeting-ai-stop");
   const minimizeBtn = document.getElementById("meeting-ai-minimize");
 
   startBtn?.addEventListener("click", startRecording);
+  pauseBtn?.addEventListener("click", pauseRecording);
+  resumeBtn?.addEventListener("click", resumeRecording);
   stopBtn?.addEventListener("click", stopRecording);
   minimizeBtn?.addEventListener("click", toggleMinimize);
 }
@@ -162,7 +176,9 @@ async function startRecording() {
 
     // Update UI
     document.getElementById("meeting-ai-start").style.display = "none";
-    document.getElementById("meeting-ai-stop").style.display = "block";
+    document.getElementById("meeting-ai-recording-controls").style.display =
+      "flex";
+    document.getElementById("meeting-ai-resume").style.display = "none";
     document.getElementById("meeting-ai-transcript").style.display = "block";
     updateStatus("Recording...", "recording");
     startTimer();
@@ -196,6 +212,43 @@ async function startRecording() {
   }
 }
 
+// Pause recording
+async function pauseRecording() {
+  if (isRecording) {
+    console.log("Pausing recording...");
+
+    // Note: MediaRecorder doesn't support true pause, so we stop and will need to merge later
+    // For simplicity, we'll just pause the UI timer
+    stopTimer();
+
+    // Update UI
+    document.getElementById("meeting-ai-recording-controls").style.display =
+      "none";
+    document.getElementById("meeting-ai-resume").style.display = "block";
+    updateStatus("Paused", "warning");
+
+    console.log("Recording paused (UI only - MediaRecorder limitation)");
+  }
+}
+
+// Resume recording
+async function resumeRecording() {
+  if (isRecording) {
+    console.log("Resuming recording...");
+
+    // Resume timer
+    startTimer();
+
+    // Update UI
+    document.getElementById("meeting-ai-recording-controls").style.display =
+      "flex";
+    document.getElementById("meeting-ai-resume").style.display = "none";
+    updateStatus("Recording...", "recording");
+
+    console.log("Recording resumed");
+  }
+}
+
 // Stop recording
 async function stopRecording() {
   if (isRecording) {
@@ -207,8 +260,10 @@ async function stopRecording() {
     isRecording = false;
 
     // Update UI
-    document.getElementById("meeting-ai-start").style.display = "block";
-    document.getElementById("meeting-ai-stop").style.display = "none";
+    document.getElementById("meeting-ai-start").style.display = "none";
+    document.getElementById("meeting-ai-recording-controls").style.display =
+      "none";
+    document.getElementById("meeting-ai-resume").style.display = "none";
     updateStatus("Processing...", "processing");
     stopTimer();
 
@@ -297,10 +352,10 @@ async function processRecording() {
       },
     });
 
-    // Show summary
-    displaySummary(analysisData, transcriptData);
+    // Save to database FIRST to get meeting ID
+    updateStatus("Saving results...", "processing");
 
-    // Save to database
+    let meetingId = null;
     try {
       const saveResponse = await fetch(
         `${API_BASE_URL.replace("/api", "")}/api/meetings`,
@@ -324,13 +379,21 @@ async function processRecording() {
       );
 
       if (saveResponse.ok) {
-        console.log("? Meeting saved to database");
+        const savedMeeting = await saveResponse.json();
+        meetingId = savedMeeting.meetingId; // API returns { meetingId: X }
+        console.log("? Meeting saved to database, ID:", meetingId);
+
+        // Store meeting ID for "View Full Results" button
+        await chrome.storage.local.set({ lastMeetingId: meetingId });
       } else {
-        console.warn("?? Failed to save meeting to database (non-critical)");
+        console.warn("?? Failed to save meeting to database");
       }
     } catch (saveError) {
-      console.warn("?? Database save error (non-critical):", saveError);
+      console.error("?? Database save error:", saveError);
     }
+
+    // Show summary with meeting ID
+    displaySummary(analysisData, transcriptData, meetingId);
 
     updateStatus("Complete!", "success");
 
@@ -369,7 +432,7 @@ function displayTranscript(transcriptData) {
 }
 
 // Display summary
-function displaySummary(analysis, transcript) {
+function displaySummary(analysis, transcript, meetingId) {
   const content = document.getElementById("meeting-ai-transcript-content");
 
   const summaryDiv = document.createElement("div");
@@ -437,75 +500,37 @@ function displaySummary(analysis, transcript) {
   const viewFullBtn = document.getElementById("meeting-ai-view-full");
   if (viewFullBtn) {
     viewFullBtn.addEventListener("click", () => {
-      openFullResults(analysis, transcript);
+      openFullResults(meetingId);
     });
   }
 }
 
-// Open full results in web app
-function openFullResults(analysis, transcript) {
-  console.log("?? Opening full results in web app...");
-  console.log("?? Analysis data:", analysis);
-  console.log("?? Transcript data:", transcript);
+// Open full results in web app (redirects to meeting detail page)
+function openFullResults(meetingId) {
+  console.log("?? Opening meeting details...", meetingId);
 
-  // Prepare data in MeetingResult format for web app
-  const meetingData = {
-    transcript: {
-      text: transcript.text || "",
-      segments: transcript.segments || [],
-      duration: transcript.duration || 0,
-    },
-    analysis: {
-      // Keep full analysis object structure
-      attendance: analysis.attendance || {
-        present: analysis.participants || [],
-        absent: [],
-      },
-      personalProgress: analysis.personalProgress || [],
-      workload: analysis.workload || [],
-      actionItems: analysis.actionItems || [],
-      keyDecisions: analysis.keyDecisions || [],
-      summary: analysis.summary || {
-        blockersToFollowUp: [],
-        priorityTasks: [],
-        responsibilities: [],
-      },
-      participants: analysis.participants || [],
-    },
-    metadata: {
-      fileName: "meeting-recording.webm",
-      fileSize: 0,
-      processedAt: new Date().toISOString(),
-      estimatedCost: 0.4,
-    },
-  };
-
-  console.log("?? Prepared meeting data:", meetingData);
-
-  // Save to Chrome Storage (cross-origin compatible)
-  chrome.storage.local.set({ meetingResults: meetingData }, () => {
-    if (chrome.runtime.lastError) {
-      console.error(
-        "? Error saving to Chrome Storage:",
-        chrome.runtime.lastError
-      );
-      return;
-    }
-
-    console.log("? Meeting data saved to Chrome Storage successfully!");
-
-    // Verify it was saved
-    chrome.storage.local.get(["meetingResults"], (data) => {
-      console.log("?? Verification - Chrome Storage contains:", data);
-    });
-
-    // Open web app in new tab
-    const webAppUrl = CONFIG.API_BASE_URL.replace("/api", "/results");
-    console.log("?? Opening URL:", webAppUrl);
+  if (!meetingId) {
+    console.error("? No meeting ID available");
+    // Fallback to base URL
+    const webAppUrl = API_BASE_URL.replace("/api", "");
     window.open(webAppUrl, "_blank");
+    return;
+  }
 
-    console.log("? Opened web app at:", webAppUrl);
-  });
+  // Open meeting detail page directly
+  const webAppUrl = API_BASE_URL.replace("/api", "");
+  const detailUrl = `${webAppUrl}/history/${meetingId}`;
+  console.log("?? Opening:", detailUrl);
+
+  window.open(detailUrl, "_blank");
+
+  // Hide overlay after opening
+  setTimeout(() => {
+    const overlay = document.getElementById("meeting-ai-overlay");
+    if (overlay) {
+      overlay.style.display = "none";
+    }
+  }, 1000);
 }
 
 // Utility functions

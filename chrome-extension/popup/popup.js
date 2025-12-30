@@ -1,188 +1,230 @@
-// Popup Script
-console.log("Popup loaded");
+// Popup JavaScript for Meeting AI Assistant
 
-// Load last meeting on popup open
-document.addEventListener("DOMContentLoaded", () => {
-  loadLastMeeting();
-  setupEventListeners();
-});
+// Get config
+const API_BASE_URL =
+  typeof CONFIG !== "undefined"
+    ? CONFIG.API_BASE_URL
+    : "http://localhost:3002/api";
 
-// Setup event listeners
-function setupEventListeners() {
-  document
-    .getElementById("view-details-btn")
-    ?.addEventListener("click", showDetails);
-  document
-    .getElementById("open-webapp-btn")
-    ?.addEventListener("click", openWebApp);
-  document
-    .getElementById("settings-btn")
-    ?.addEventListener("click", openSettings);
-  document
-    .getElementById("close-modal-btn")
-    ?.addEventListener("click", closeModal);
-}
+// UI Elements
+const statusIcon = document.getElementById("status-icon");
+const statusTitle = document.getElementById("status-title");
+const statusSubtitle = document.getElementById("status-subtitle");
+const startBtn = document.getElementById("start-btn");
+const recordingControls = document.getElementById("recording-controls");
+const pauseBtn = document.getElementById("pause-btn");
+const stopBtn = document.getElementById("stop-btn");
+const resumeBtn = document.getElementById("resume-btn");
+const timerEl = document.getElementById("timer");
+const timerValue = document.getElementById("timer-value");
+const openWebAppBtn = document.getElementById("open-webapp-btn");
 
-// Load last meeting from storage
-async function loadLastMeeting() {
-  try {
-    const data = await chrome.storage.local.get("lastMeeting");
+let timerInterval = null;
+let startTime = null;
 
-    if (data.lastMeeting) {
-      const meeting = data.lastMeeting;
-      displayLastMeeting(meeting);
-    } else {
-      console.log("No meeting data found");
-    }
-  } catch (error) {
-    console.error("Failed to load meeting:", error);
-  }
-}
+// Initialize popup
+async function init() {
+  // Check if we're on a Google Meet page
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-// Display last meeting
-function displayLastMeeting(meeting) {
-  const section = document.getElementById("last-meeting-section");
-  section.style.display = "block";
-
-  // Update date
-  const date = new Date(meeting.timestamp);
-  document.getElementById("meeting-date").textContent = formatDate(date);
-
-  // Update duration
-  if (meeting.transcript.duration) {
-    const mins = Math.floor(meeting.transcript.duration / 60);
-    const secs = Math.floor(meeting.transcript.duration % 60);
-    document.getElementById("meeting-duration").textContent = `${mins}:${String(
-      secs
-    ).padStart(2, "0")}`;
-  }
-
-  // Update stats
-  document.getElementById("summary-count").textContent =
-    meeting.analysis.summary.length;
-  document.getElementById("tasks-count").textContent =
-    meeting.analysis.actionItems.length;
-  document.getElementById("decisions-count").textContent =
-    meeting.analysis.keyDecisions.length;
-}
-
-// Show details modal
-async function showDetails() {
-  try {
-    const data = await chrome.storage.local.get("lastMeeting");
-
-    if (!data.lastMeeting) {
-      alert("No meeting data available");
-      return;
-    }
-
-    const meeting = data.lastMeeting;
-    const modalBody = document.getElementById("modal-body");
-
-    modalBody.innerHTML = `
-      <div class="modal-section">
-        <h3>?? Summary</h3>
-        <ul>
-          ${meeting.analysis.summary
-            .map((point) => `<li>${point}</li>`)
-            .join("")}
-        </ul>
-      </div>
-
-      <div class="modal-section">
-        <h3>? Action Items (${meeting.analysis.actionItems.length})</h3>
-        <ul>
-          ${meeting.analysis.actionItems
-            .map(
-              (item) =>
-                `<li>${item.task} - <strong>${item.assignee}</strong></li>`
-            )
-            .join("")}
-        </ul>
-      </div>
-
-      ${
-        meeting.analysis.keyDecisions.length > 0
-          ? `
-      <div class="modal-section">
-        <h3>?? Key Decisions</h3>
-        <ul>
-          ${meeting.analysis.keyDecisions
-            .map((decision) => `<li>${decision}</li>`)
-            .join("")}
-        </ul>
-      </div>
-      `
-          : ""
-      }
-
-      ${
-        meeting.analysis.participants.length > 0
-          ? `
-      <div class="modal-section">
-        <h3>?? Participants</h3>
-        <p style="font-size: 13px; color: #4b5563;">${meeting.analysis.participants.join(
-          ", "
-        )}</p>
-      </div>
-      `
-          : ""
-      }
-
-      <div class="modal-section">
-        <h3>?? Full Transcript</h3>
-        <div class="modal-transcript">
-          ${meeting.transcript.text}
-        </div>
-      </div>
-    `;
-
-    document.getElementById("details-modal").style.display = "flex";
-  } catch (error) {
-    console.error("Failed to show details:", error);
-    alert("Failed to load meeting details");
-  }
-}
-
-// Close modal
-function closeModal() {
-  document.getElementById("details-modal").style.display = "none";
-}
-
-// Open web app
-function openWebApp() {
-  chrome.tabs.create({
-    url: "http://localhost:3000", // Change to your deployed URL
-  });
-}
-
-// Open settings
-function openSettings() {
-  alert("Settings coming soon!");
-  // TODO: Create settings page
-}
-
-// Format date
-function formatDate(date) {
-  const now = new Date();
-  const diffMs = now - date;
-  const diffMins = Math.floor(diffMs / 60000);
-
-  if (diffMins < 1) {
-    return "Just now";
-  } else if (diffMins < 60) {
-    return `${diffMins} min ago`;
-  } else if (diffMins < 1440) {
-    const hours = Math.floor(diffMins / 60);
-    return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (tab && tab.url && tab.url.includes("meet.google.com")) {
+    statusTitle.textContent = "Ready to Record";
+    statusSubtitle.textContent = "Click Start to begin";
+    startBtn.disabled = false;
   } else {
-    return date.toLocaleDateString();
+    statusTitle.textContent = "Not on Google Meet";
+    statusSubtitle.textContent = "Join a meeting first";
+    startBtn.disabled = true;
+  }
+
+  // Check recording status
+  checkRecordingStatus();
+}
+
+// Check recording status from storage
+async function checkRecordingStatus() {
+  const result = await chrome.storage.local.get([
+    "isRecording",
+    "recordingStartTime",
+  ]);
+
+  if (result.isRecording) {
+    updateUIState("recording");
+    if (result.recordingStartTime) {
+      startTime = result.recordingStartTime;
+      startTimer();
+    }
+  } else {
+    updateUIState("idle");
   }
 }
 
-// Close modal on background click
-document.getElementById("details-modal")?.addEventListener("click", (e) => {
-  if (e.target.id === "details-modal") {
-    closeModal();
+// Update UI based on state
+function updateUIState(state) {
+  switch (state) {
+    case "idle":
+      statusIcon.textContent = "?";
+      statusTitle.textContent = "Not Recording";
+      statusSubtitle.textContent = "Click Start to begin";
+      startBtn.style.display = "block";
+      recordingControls.style.display = "none";
+      resumeBtn.style.display = "none";
+      timerEl.style.display = "none";
+      stopTimer();
+      break;
+
+    case "recording":
+      statusIcon.textContent = "??";
+      statusTitle.textContent = "Recording...";
+      statusSubtitle.textContent = "Meeting in progress";
+      startBtn.style.display = "none";
+      recordingControls.style.display = "grid";
+      resumeBtn.style.display = "none";
+      timerEl.style.display = "flex";
+      break;
+
+    case "paused":
+      statusIcon.textContent = "??";
+      statusTitle.textContent = "Paused";
+      statusSubtitle.textContent = "Click Resume to continue";
+      startBtn.style.display = "none";
+      recordingControls.style.display = "none";
+      resumeBtn.style.display = "block";
+      timerEl.style.display = "flex";
+      stopTimer();
+      break;
+
+    case "processing":
+      statusIcon.textContent = "?";
+      statusTitle.textContent = "Processing...";
+      statusSubtitle.textContent = "Analyzing your meeting";
+      startBtn.style.display = "none";
+      recordingControls.style.display = "none";
+      resumeBtn.style.display = "none";
+      timerEl.style.display = "none";
+      stopTimer();
+      break;
+  }
+}
+
+// Start timer
+function startTimer() {
+  if (timerInterval) return;
+
+  timerInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const minutes = Math.floor(elapsed / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    timerValue.textContent = `${String(minutes).padStart(2, "0")}:${String(
+      seconds
+    ).padStart(2, "0")}`;
+  }, 1000);
+}
+
+// Stop timer
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  timerValue.textContent = "00:00";
+}
+
+// Button event listeners
+startBtn.addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (tab && tab.url && tab.url.includes("meet.google.com")) {
+    // Send message to content script to start recording
+    chrome.tabs.sendMessage(
+      tab.id,
+      { action: "startRecording" },
+      (response) => {
+        if (response && response.success) {
+          startTime = Date.now();
+          chrome.storage.local.set({
+            isRecording: true,
+            recordingStartTime: startTime,
+          });
+          updateUIState("recording");
+          startTimer();
+        }
+      }
+    );
   }
 });
+
+pauseBtn.addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (tab && tab.url && tab.url.includes("meet.google.com")) {
+    // Send message to content script to pause recording
+    chrome.tabs.sendMessage(
+      tab.id,
+      { action: "pauseRecording" },
+      (response) => {
+        if (response && response.success) {
+          chrome.storage.local.set({ isPaused: true });
+          updateUIState("paused");
+        }
+      }
+    );
+  }
+});
+
+resumeBtn.addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (tab && tab.url && tab.url.includes("meet.google.com")) {
+    // Send message to content script to resume recording
+    chrome.tabs.sendMessage(
+      tab.id,
+      { action: "resumeRecording" },
+      (response) => {
+        if (response && response.success) {
+          chrome.storage.local.set({ isPaused: false });
+          updateUIState("recording");
+          startTimer();
+        }
+      }
+    );
+  }
+});
+
+stopBtn.addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (tab && tab.url && tab.url.includes("meet.google.com")) {
+    // Send message to content script to stop recording
+    chrome.tabs.sendMessage(tab.id, { action: "stopRecording" }, (response) => {
+      if (response && response.success) {
+        chrome.storage.local.set({
+          isRecording: false,
+          isPaused: false,
+          recordingStartTime: null,
+        });
+        updateUIState("processing");
+      }
+    });
+  }
+});
+
+openWebAppBtn.addEventListener("click", () => {
+  chrome.tabs.create({ url: API_BASE_URL.replace("/api", "") });
+});
+
+// Listen for messages from content script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "recordingStarted") {
+    updateUIState("recording");
+    startTimer();
+  } else if (message.action === "recordingStopped") {
+    updateUIState("idle");
+    stopTimer();
+  } else if (message.action === "processingStarted") {
+    updateUIState("processing");
+  }
+});
+
+// Initialize on load
+init();
