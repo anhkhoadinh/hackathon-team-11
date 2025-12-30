@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     validateApiKey();
     
     const body = await request.json();
-    const { transcript } = body;
+    const { transcript, language } = body;
 
     if (!transcript || typeof transcript !== 'string') {
       return NextResponse.json(
@@ -44,7 +44,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`Analyzing transcript (${transcript.length} characters)...`);
+    console.log(`Analyzing transcript (${transcript.length} characters)... Language: ${language || 'auto'}`);
+
+    // Enhance prompt based on language if provided
+    let enhancedPrompt = ANALYSIS_PROMPT;
+    if (language === 'vi') {
+      enhancedPrompt += '\n\nIMPORTANT: The transcript is in Vietnamese. Extract information in Vietnamese and use Vietnamese names properly.';
+    } else if (language === 'ja') {
+      enhancedPrompt += '\n\nIMPORTANT: The transcript is in Japanese. Extract information in Japanese and use Japanese names properly.';
+    }
 
     // Call GPT-4 for analysis
     const completion = await openai.chat.completions.create({
@@ -52,7 +60,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: ANALYSIS_PROMPT,
+          content: enhancedPrompt,
         },
         {
           role: 'user',

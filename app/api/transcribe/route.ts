@@ -51,12 +51,17 @@ export async function POST(request: NextRequest) {
 
     console.log(`Processing file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
 
+    // Get language parameter (optional)
+    const language = formData.get('language') as string | null;
+    const languageCode = language && ['vi', 'en', 'ja'].includes(language) ? language : undefined;
+
     // Call Whisper API
     const transcription = await openai.audio.transcriptions.create({
       file: file,
       model: 'whisper-1',
       response_format: 'verbose_json',
       timestamp_granularities: ['segment'],
+      language: languageCode, // Optional: helps improve accuracy
     });
 
     // Extract segments with timestamps

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Mic, Sparkles } from 'lucide-react';
 import FileUpload from '@/components/FileUpload';
 import ProcessingStatus from '@/components/ProcessingStatus';
 import ResultDisplay from '@/components/ResultDisplay';
@@ -8,6 +9,7 @@ import { MeetingResult, ProcessingStep } from '@/types';
 import { estimateCost } from '@/lib/utils';
 
 type AppState = 'upload' | 'processing' | 'complete';
+type Language = 'vi' | 'en' | 'ja';
 
 const initialSteps: ProcessingStep[] = [
   { id: 'upload', label: 'Uploading file', status: 'pending' },
@@ -17,11 +19,18 @@ const initialSteps: ProcessingStep[] = [
   { id: 'complete', label: 'Done!', status: 'pending' },
 ];
 
+const languages = [
+  { value: 'vi' as Language, label: '🇻🇳 Vietnamese', flag: '🇻🇳' },
+  { value: 'en' as Language, label: '🇺🇸 English', flag: '🇺🇸' },
+  { value: 'ja' as Language, label: '🇯🇵 Japanese', flag: '🇯🇵' },
+];
+
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('upload');
   const [steps, setSteps] = useState<ProcessingStep[]>(initialSteps);
   const [result, setResult] = useState<MeetingResult | null>(null);
   const [error, setError] = useState<string>('');
+  const [language, setLanguage] = useState<Language>('en');
 
   const updateStep = (stepId: string, status: ProcessingStep['status'], progress?: number) => {
     setSteps(prev => 
@@ -41,6 +50,7 @@ export default function Home() {
       updateStep('upload', 'processing');
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('language', language);
 
       updateStep('upload', 'completed');
       updateStep('transcribe', 'processing');
@@ -65,7 +75,10 @@ export default function Home() {
       const analyzeResponse = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: transcriptData.text }),
+        body: JSON.stringify({ 
+          transcript: transcriptData.text,
+          language: language,
+        }),
       });
 
       if (!analyzeResponse.ok) {
@@ -151,29 +164,56 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Meeting AI Assistant
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Transform your meeting recordings into actionable insights with AI-powered transcription and analysis
-          </p>
+    <div className="min-h-screen">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 glass border-b border-white/20 shadow-sm">
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900">MeetingMind AI</h1>
+                <p className="text-xs text-slate-600 hidden sm:block">Turn your meetings into actionable insights instantly.</p>
+              </div>
+            </div>
+            
+            {appState === 'upload' && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <label htmlFor="language-select" className="text-sm font-medium text-slate-700 whitespace-nowrap">
+                  Processing Language:
+                </label>
+                <select
+                  id="language-select"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all w-full sm:w-auto"
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.value} value={lang.value}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
+      </header>
 
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Main Content */}
         <div className="space-y-6">
           {appState === 'upload' && (
-            <FileUpload onFileSelect={handleFileSelect} />
+            <FileUpload onFileSelect={handleFileSelect} language={language} />
           )}
 
           {appState === 'processing' && (
             <>
               <ProcessingStatus steps={steps} />
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg glass">
                   <h3 className="font-semibold text-red-800 mb-1">Error</h3>
                   <p className="text-sm text-red-600">{error}</p>
                   <button
@@ -197,15 +237,15 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-sm text-gray-500">
+        <footer className="mt-16 text-center text-sm text-slate-500">
           <p>
-            Powered by OpenAI Whisper & GPT-4 ? Cost: ~$0.40 per 60min meeting
+            Powered by OpenAI Whisper & GPT-4 • Cost: ~$0.40 per 60min meeting
           </p>
           <p className="mt-2">
             Built for efficient meeting documentation and team collaboration
           </p>
         </footer>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
