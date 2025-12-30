@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Mic, Sparkles } from 'lucide-react';
+import { Mic, Sparkles, History } from 'lucide-react';
+import Link from 'next/link';
 import FileUpload from '@/components/FileUpload';
 import ProcessingStatus from '@/components/ProcessingStatus';
 import ResultDisplay from '@/components/ResultDisplay';
@@ -110,6 +111,35 @@ export default function Home() {
 
       setResult(meetingResult);
 
+      // Save to database
+      try {
+        const saveResponse = await fetch('/api/meetings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: `${file.name.replace(/\.(mp3|mp4|wav|webm|ogg|m4a)$/i, '')}`,
+            meetingDate: new Date().toISOString(),
+            duration: transcriptData.duration,
+            transcript: meetingResult.transcript,
+            analysis: analysisData,
+            source: 'upload',
+            fileName: file.name,
+            fileSize: file.size,
+            estimatedCost: meetingResult.metadata.estimatedCost,
+          }),
+        });
+
+        if (saveResponse.ok) {
+          console.log('Meeting saved to database successfully');
+        } else {
+          console.warn('Failed to save meeting to database (non-critical)');
+        }
+      } catch (saveError) {
+        console.warn('Database save error (non-critical):', saveError);
+      }
+
       updateStep('generate', 'completed');
       updateStep('complete', 'completed');
       
@@ -179,25 +209,34 @@ export default function Home() {
               </div>
             </div>
             
-            {appState === 'upload' && (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                <label htmlFor="language-select" className="text-sm font-medium text-slate-700 whitespace-nowrap">
-                  Processing Language:
-                </label>
-                <select
-                  id="language-select"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as Language)}
-                  className="px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all w-full sm:w-auto"
-                >
-                  {languages.map((lang) => (
-                    <option key={lang.value} value={lang.value}>
-                      {lang.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              {appState === 'upload' && (
+                <>
+                  <label htmlFor="language-select" className="text-sm font-medium text-slate-700 whitespace-nowrap">
+                    Processing Language:
+                  </label>
+                  <select
+                    id="language-select"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all w-full sm:w-auto"
+                  >
+                    {languages.map((lang) => (
+                      <option key={lang.value} value={lang.value}>
+                        {lang.label}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+              <Link
+                href="/history"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50 text-sm font-medium transition-all"
+              >
+                <History className="w-4 h-4" />
+                History
+              </Link>
+            </div>
           </div>
         </div>
       </header>
