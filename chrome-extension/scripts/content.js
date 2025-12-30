@@ -1,8 +1,8 @@
 // Content Script - Runs in Google Meet pages
 console.log("Meeting AI Assistant: Content script loaded");
 
-// Configuration
-const API_BASE_URL = "http://localhost:3002/api"; // Change to your deployed URL
+// Configuration (loaded from config.js)
+const API_BASE_URL = CONFIG.API_BASE_URL;
 
 // State management
 let isRecording = false;
