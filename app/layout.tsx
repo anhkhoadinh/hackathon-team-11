@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
+const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
+const interMono = Inter({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
-  title: "MeetingMind AI - Turn your meetings into actionable insights instantly",
-  description: "Transform meeting recordings into actionable insights with AI-powered transcription and analysis using OpenAI Whisper and GPT-4",
+  title: "MeetingMind AI - Transform Meetings Into Actionable Insights",
+  description: "AI-powered meeting analysis platform. Upload recordings, get instant transcripts, structured insights, and PDF reports. Powered by OpenAI Whisper & GPT-4.",
 };
 
 export default function RootLayout({
@@ -23,9 +26,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${interMono.variable} antialiased`}
       >
         {children}
       </body>

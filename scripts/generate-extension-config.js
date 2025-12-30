@@ -20,7 +20,7 @@ try {
   const envContent = fs.readFileSync(envPath, "utf8");
 
   // Parse API_URL from .env.local (if exists)
-  let apiUrl = "http://localhost:3002/api";
+  let apiUrl = "http://localhost:3000/api";
   const apiUrlMatch =
     envContent.match(/^API_BASE_URL=(.+)$/m) ||
     envContent.match(/^NEXT_PUBLIC_API_URL=(.+)$/m);

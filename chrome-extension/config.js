@@ -5,7 +5,7 @@
 
 const CONFIG = {
   // API Base URL from .env.local
-  API_BASE_URL: "http://localhost:3002/api",
+  API_BASE_URL: "http://localhost:3000/api",
 };
 
 // Export for use in extension scripts
