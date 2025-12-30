@@ -1,5 +1,5 @@
 // Popup Script
-console.log("Popup loaded");
+console.log("MeetingMind AI Popup loaded");
 
 // Load last meeting on popup open
 document.addEventListener("DOMContentLoaded", () => {
@@ -49,7 +49,7 @@ function displayLastMeeting(meeting) {
   document.getElementById("meeting-date").textContent = formatDate(date);
 
   // Update duration
-  if (meeting.transcript.duration) {
+  if (meeting.transcript && meeting.transcript.duration) {
     const mins = Math.floor(meeting.transcript.duration / 60);
     const secs = Math.floor(meeting.transcript.duration % 60);
     document.getElementById("meeting-duration").textContent = `${mins}:${String(
@@ -57,16 +57,22 @@ function displayLastMeeting(meeting) {
     ).padStart(2, "0")}`;
   }
 
-  // Update stats
-  document.getElementById("summary-count").textContent =
-    meeting.analysis.summary.length;
-  document.getElementById("tasks-count").textContent =
-    meeting.analysis.actionItems.length;
-  document.getElementById("decisions-count").textContent =
-    meeting.analysis.keyDecisions.length;
+  // Update stats - handle both old and new data structures
+  const summary = meeting.analysis?.summary || [];
+  const actionItems = meeting.analysis?.actionItems || [];
+  const keyDecisions = meeting.analysis?.keyDecisions || [];
+
+  // Handle summary as array or object
+  const summaryLength = Array.isArray(summary) 
+    ? summary.length 
+    : (summary.blockersToFollowUp?.length || 0) + (summary.priorityTasks?.length || 0) + (summary.responsibilities?.length || 0);
+
+  document.getElementById("summary-count").textContent = summaryLength || 0;
+  document.getElementById("tasks-count").textContent = actionItems.length || 0;
+  document.getElementById("decisions-count").textContent = keyDecisions.length || 0;
 }
 
-// Show details modal
+// Show details modal with improved formatting
 async function showDetails() {
   try {
     const data = await chrome.storage.local.get("lastMeeting");
@@ -79,62 +85,109 @@ async function showDetails() {
     const meeting = data.lastMeeting;
     const modalBody = document.getElementById("modal-body");
 
-    modalBody.innerHTML = `
-      <div class="modal-section">
-        <h3>?? Summary</h3>
-        <ul>
-          ${meeting.analysis.summary
-            .map((point) => `<li>${point}</li>`)
-            .join("")}
-        </ul>
-      </div>
+    // Handle both old and new data structures
+    const summary = meeting.analysis?.summary || [];
+    const actionItems = meeting.analysis?.actionItems || [];
+    const keyDecisions = meeting.analysis?.keyDecisions || [];
+    const participants = meeting.analysis?.participants || [];
+    const transcript = meeting.transcript?.text || "";
 
+    // Format summary
+    let summaryHTML = "";
+    if (Array.isArray(summary)) {
+      summaryHTML = `
+        <div class="modal-section">
+          <h3>📋 Summary</h3>
+          <ul>
+            ${summary.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}
+          </ul>
+        </div>
+      `;
+    } else {
+      // New structure with blockers, priority tasks, responsibilities
+      summaryHTML = `
+        <div class="modal-section">
+          <h3>📋 Summary</h3>
+          ${summary.blockersToFollowUp?.length > 0 ? `
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #dc2626;">⚠️ Blockers to Follow-up:</strong>
+              <ul>
+                ${summary.blockersToFollowUp.map(b => `<li>${escapeHtml(b)}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+          ${summary.priorityTasks?.length > 0 ? `
+            <div style="margin-bottom: 12px;">
+              <strong style="color: #25C9D0;">🎯 Priority Tasks:</strong>
+              <ul>
+                ${summary.priorityTasks.map(t => `<li>${escapeHtml(t)}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+          ${summary.responsibilities?.length > 0 ? `
+            <div>
+              <strong style="color: #14B8A6;">👥 Responsibilities:</strong>
+              <ul>
+                ${summary.responsibilities.map(r => 
+                  `<li>${escapeHtml(r.person || r.name || 'Unknown')}: ${escapeHtml(r.task)}${r.deadline ? ` (${escapeHtml(r.deadline)})` : ''}</li>`
+                ).join("")}
+              </ul>
+            </div>
+          ` : ""}
+        </div>
+      `;
+    }
+
+    modalBody.innerHTML = `
+      ${summaryHTML}
+
+      ${actionItems.length > 0 ? `
       <div class="modal-section">
-        <h3>? Action Items (${meeting.analysis.actionItems.length})</h3>
+        <h3>✅ Action Items (${actionItems.length})</h3>
         <ul>
-          ${meeting.analysis.actionItems
+          ${actionItems
             .map(
               (item) =>
-                `<li>${item.task} - <strong>${item.assignee}</strong></li>`
+                `<li><strong>${escapeHtml(item.task || item)}</strong>${item.assignee ? ` - <span style="color: #25C9D0;">${escapeHtml(item.assignee)}</span>` : ''}${item.dueDate ? ` <span style="color: #64748b; font-size: 11px;">(${escapeHtml(item.dueDate)})</span>` : ''}</li>`
             )
             .join("")}
         </ul>
       </div>
+      ` : ""}
 
-      ${
-        meeting.analysis.keyDecisions.length > 0
-          ? `
+      ${keyDecisions.length > 0 ? `
       <div class="modal-section">
-        <h3>?? Key Decisions</h3>
+        <h3>🎯 Key Decisions</h3>
         <ul>
-          ${meeting.analysis.keyDecisions
-            .map((decision) => `<li>${decision}</li>`)
+          ${keyDecisions
+            .map((decision) => `<li>${escapeHtml(decision)}</li>`)
             .join("")}
         </ul>
       </div>
-      `
-          : ""
-      }
+      ` : ""}
 
-      ${
-        meeting.analysis.participants.length > 0
-          ? `
+      ${participants.length > 0 ? `
       <div class="modal-section">
-        <h3>?? Participants</h3>
-        <p style="font-size: 13px; color: #4b5563;">${meeting.analysis.participants.join(
-          ", "
-        )}</p>
-      </div>
-      `
-          : ""
-      }
-
-      <div class="modal-section">
-        <h3>?? Full Transcript</h3>
-        <div class="modal-transcript">
-          ${meeting.transcript.text}
+        <h3>👥 Participants</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          ${participants
+            .map(
+              (p) =>
+                `<span style="display: inline-flex; align-items: center; padding: 6px 12px; background: linear-gradient(135deg, rgba(37, 201, 208, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%); border: 1px solid rgba(37, 201, 208, 0.2); border-radius: 8px; font-size: 12px; font-weight: 600; color: #1f2937;">${escapeHtml(p)}</span>`
+            )
+            .join("")}
         </div>
       </div>
+      ` : ""}
+
+      ${transcript ? `
+      <div class="modal-section">
+        <h3>📄 Full Transcript</h3>
+        <div class="modal-transcript">
+          ${escapeHtml(transcript)}
+        </div>
+      </div>
+      ` : ""}
     `;
 
     document.getElementById("details-modal").style.display = "flex";
@@ -151,15 +204,24 @@ function closeModal() {
 
 // Open web app
 function openWebApp() {
-  chrome.tabs.create({
-    url: "http://localhost:3000", // Change to your deployed URL
+  // Try to get API base URL from config, fallback to localhost
+  chrome.storage.local.get(["apiBaseUrl"], (data) => {
+    const baseUrl = data.apiBaseUrl || "http://localhost:3000";
+    chrome.tabs.create({
+      url: baseUrl,
+    });
   });
 }
 
 // Open settings
 function openSettings() {
-  alert("Settings coming soon!");
-  // TODO: Create settings page
+  // Open web app settings page if available
+  chrome.storage.local.get(["apiBaseUrl"], (data) => {
+    const baseUrl = data.apiBaseUrl || "http://localhost:3000";
+    chrome.tabs.create({
+      url: `${baseUrl}/settings`,
+    });
+  });
 }
 
 // Format date
@@ -176,8 +238,20 @@ function formatDate(date) {
     const hours = Math.floor(diffMins / 60);
     return `${hours} hour${hours > 1 ? "s" : ""} ago`;
   } else {
-    return date.toLocaleDateString();
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   }
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  if (typeof text !== "string") return "";
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Close modal on background click

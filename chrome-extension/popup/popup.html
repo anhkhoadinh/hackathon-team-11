@@ -3,21 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meeting AI Assistant</title>
+  <title>MeetingMind AI</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="popup-container">
     <!-- Header -->
     <div class="popup-header">
-      <h1>??? Meeting AI</h1>
-      <p class="popup-subtitle">Your intelligent meeting assistant</p>
+      <div class="header-content">
+        <div class="logo-container">
+          <div class="logo-glow"></div>
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="header-text">
+          <h1>MeetingMind AI</h1>
+          <p class="popup-subtitle">Your intelligent meeting assistant</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Status -->
+    <!-- Status Section -->
     <div id="status-section" class="popup-section">
       <div class="status-card">
-        <div class="status-icon">?</div>
+        <div class="status-icon-wrapper">
+          <div class="status-icon">✨</div>
+        </div>
         <div class="status-text">
           <div class="status-title">Ready to Record</div>
           <div class="status-subtitle">Join a Google Meet to start</div>
@@ -25,42 +41,73 @@
       </div>
     </div>
 
-    <!-- Last Meeting -->
+    <!-- Last Meeting Section -->
     <div id="last-meeting-section" class="popup-section" style="display: none;">
-      <h2 class="section-title">Last Meeting</h2>
+      <h2 class="section-title">
+        <span class="section-icon">📋</span>
+        Last Meeting
+      </h2>
       <div class="meeting-card">
         <div class="meeting-meta">
-          <span id="meeting-date">Just now</span>
-          <span id="meeting-duration">5:23</span>
+          <div class="meta-item">
+            <span class="meta-icon">📅</span>
+            <span id="meeting-date">Just now</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">⏱️</span>
+            <span id="meeting-duration">5:23</span>
+          </div>
         </div>
         <div class="meeting-stats">
           <div class="stat">
+            <div class="stat-icon">📝</div>
             <span class="stat-value" id="summary-count">5</span>
             <span class="stat-label">Key Points</span>
           </div>
           <div class="stat">
+            <div class="stat-icon">✅</div>
             <span class="stat-value" id="tasks-count">3</span>
             <span class="stat-label">Tasks</span>
           </div>
           <div class="stat">
+            <div class="stat-icon">🎯</div>
             <span class="stat-value" id="decisions-count">2</span>
             <span class="stat-label">Decisions</span>
           </div>
         </div>
-        <button id="view-details-btn" class="btn btn-primary">View Details</button>
+        <button id="view-details-btn" class="btn btn-primary">
+          <span>View Full Results</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </button>
       </div>
     </div>
 
     <!-- Quick Actions -->
     <div class="popup-section">
-      <h2 class="section-title">Quick Actions</h2>
+      <h2 class="section-title">
+        <span class="section-icon">⚡</span>
+        Quick Actions
+      </h2>
       <div class="actions-grid">
         <button id="open-webapp-btn" class="action-btn">
-          <span class="action-icon">??</span>
+          <div class="action-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </div>
           <span class="action-label">Open Web App</span>
         </button>
         <button id="settings-btn" class="action-btn">
-          <span class="action-icon">??</span>
+          <div class="action-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+            </svg>
+          </div>
           <span class="action-label">Settings</span>
         </button>
       </div>
@@ -69,7 +116,9 @@
     <!-- Instructions -->
     <div class="popup-section">
       <div class="info-card">
-        <strong>How to use:</strong>
+        <div class="info-header">
+          <strong>💡 How to use:</strong>
+        </div>
         <ol>
           <li>Join a Google Meet meeting</li>
           <li>Click "Start Recording" in the overlay</li>
@@ -82,7 +131,7 @@
 
     <!-- Footer -->
     <div class="popup-footer">
-      <p>Made with ?? for productive meetings</p>
+      <p>Made with ❤️ for productive meetings</p>
       <a href="https://github.com/anhkhoadinh/hackathon-team-11" target="_blank">GitHub</a>
     </div>
   </div>
@@ -91,8 +140,17 @@
   <div id="details-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Meeting Details</h2>
-        <button id="close-modal-btn" class="close-btn">&times;</button>
+        <div class="modal-header-content">
+          <div class="modal-icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h2>Meeting Details</h2>
+        </div>
+        <button id="close-modal-btn" class="close-btn">×</button>
       </div>
       <div class="modal-body" id="modal-body">
         <!-- Will be populated dynamically -->
@@ -103,4 +161,3 @@
   <script src="popup.js"></script>
 </body>
 </html>
-
