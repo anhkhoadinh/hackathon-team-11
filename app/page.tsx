@@ -230,7 +230,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <Link
                 href="/history"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50 text-sm font-medium transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all shadow-lg hover:shadow-xl shadow-[#25C9D0]/30"
               >
                 <History className="w-4 h-4" />
                 History
