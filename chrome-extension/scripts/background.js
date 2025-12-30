@@ -15,10 +15,10 @@ chrome.runtime.onInstalled.addListener((details) => {
       },
     });
 
-    // Open welcome page
-    chrome.tabs.create({
-      url: "popup/welcome.html",
-    });
+    // Open welcome page (commented out - file doesn't exist yet)
+    // chrome.tabs.create({
+    //   url: "popup/welcome.html",
+    // });
   } else if (details.reason === "update") {
     console.log("Meeting AI Assistant updated");
   }
