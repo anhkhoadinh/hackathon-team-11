@@ -1,8 +1,8 @@
-# Meeting AI Assistant ???
+# Meeting AI Assistant
 
 Transform your meeting recordings into actionable insights with AI-powered transcription and analysis.
 
-## Features ?
+## Features
 
 - **Audio/Video Upload**: Support for MP3, WAV, M4A, MP4, WebM formats (up to 25MB)
 - **AI Transcription**: Powered by OpenAI Whisper with timestamp granularity
@@ -15,7 +15,7 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 - **Modern UI**: Clean, responsive interface with progress tracking
 - **Cost Effective**: ~$0.40 per 60-minute meeting
 
-## Tech Stack ???
+## Tech Stack
 
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
@@ -24,9 +24,9 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 - **PDF**: jsPDF with auto-table
 - **Icons**: Lucide React
 
-## Getting Started ??
+## Getting Started
 
-> **?? Team Members:** See **[SETUP_FOR_TEAM.md](./SETUP_FOR_TEAM.md)** for quick setup with custom ports!
+> **Team Members:** See **[SETUP_FOR_TEAM.md](./SETUP_FOR_TEAM.md)** for quick setup with custom ports!
 
 ### Prerequisites
 
@@ -93,27 +93,27 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 
 ```
 meeting-ai/
-??? app/
-?   ??? api/
-?   ?   ??? transcribe/       # Whisper API integration
-?   ?   ??? analyze/          # GPT-4 analysis
-?   ?   ??? generate-pdf/     # PDF generation
-?   ??? page.tsx              # Main application page
-?   ??? layout.tsx
-??? components/
-?   ??? FileUpload.tsx        # Drag & drop upload
-?   ??? ProcessingStatus.tsx # Progress indicator
-?   ??? ResultDisplay.tsx    # Results with tabs
-?   ??? ui/                   # Reusable UI components
-??? lib/
-?   ??? openai.ts            # OpenAI client
-?   ??? pdf-generator.ts     # PDF generation logic
-?   ??? utils.ts             # Utility functions
-??? types/
-    ??? index.ts             # TypeScript interfaces
+  app/
+    api/
+      transcribe/       # Whisper API integration
+      analyze/          # GPT-4 analysis
+      generate-pdf/     # PDF generation
+    page.tsx            # Main application page
+    layout.tsx
+  components/
+    FileUpload.tsx      # Drag & drop upload
+    ProcessingStatus.tsx # Progress indicator
+    ResultDisplay.tsx   # Results with tabs
+    ui/                 # Reusable UI components
+  lib/
+    openai.ts           # OpenAI client
+    pdf-generator.ts    # PDF generation logic
+    utils.ts            # Utility functions
+  types/
+    index.ts            # TypeScript interfaces
 ```
 
-## API Routes ??
+## API Routes
 
 ### POST /api/transcribe
 
@@ -136,13 +136,13 @@ Generates PDF report from meeting data.
 **Request**: JSON with full meeting result
 **Response**: PDF file download
 
-## Environment Variables ??
+## Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `OPENAI_API_KEY` | Your OpenAI API key | ? Yes |
+| `OPENAI_API_KEY` | Your OpenAI API key | Yes |
 
-## Deployment ??
+## Deployment
 
 ### Deploy to Vercel (Recommended)
 
@@ -157,9 +157,9 @@ npm install -g vercel
 vercel
 ```
 
-## Roadmap ???
+## Roadmap
 
-### Phase 1: MVP (Current) ?
+### Phase 1: MVP (Current)
 
 - [x] File upload interface
 - [x] Whisper transcription
@@ -183,7 +183,7 @@ vercel
 - [ ] Multi-language support
 - [ ] Custom AI prompts
 
-## Troubleshooting ??
+## Troubleshooting
 
 ### "Invalid OpenAI API key"
 
@@ -200,7 +200,7 @@ vercel
 - Very long files may timeout (5 min limit)
 - Consider splitting files > 60 minutes
 
-## Contributing ??
+## Contributing
 
 Contributions are welcome! Feel free to:
 
@@ -208,14 +208,14 @@ Contributions are welcome! Feel free to:
 - Suggest features
 - Submit pull requests
 
-## License ??
+## License
 
 MIT License - feel free to use this project for personal or commercial purposes.
 
-## Support ??
+## Support
 
 For questions or issues, please open an issue on GitHub.
 
 ---
 
-Built with ?? using Next.js, TypeScript, and OpenAI
+Built with love using Next.js, TypeScript, and OpenAI
