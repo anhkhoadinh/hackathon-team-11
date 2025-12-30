@@ -2,14 +2,58 @@
 console.log("Meeting AI Assistant: Content script loaded");
 
 // Configuration
-const API_BASE_URL = "http://localhost:3000/api"; // Change to your deployed URL
+const API_BASE_URL = "http://localhost:3002/api"; // Change to your deployed URL
 
 // State management
 let isRecording = false;
-let mediaRecorder = null;
-let audioChunks = [];
 let recordingStartTime = null;
 let transcriptSegments = [];
+let injectedScriptReady = false;
+let recordingData = null;
+
+// Inject recorder script into page context
+function injectRecorderScript() {
+  const script = document.createElement("script");
+  script.src = chrome.runtime.getURL("scripts/injected-recorder.js");
+  script.onload = () => {
+    console.log("Injected recorder script loaded");
+    script.remove();
+  };
+  (document.head || document.documentElement).appendChild(script);
+}
+
+// Listen for messages from injected script
+window.addEventListener("message", (event) => {
+  if (event.source !== window) return;
+
+  const { action, data } = event.data;
+
+  if (action === "INJECTED_READY") {
+    console.log("Injected script ready");
+    injectedScriptReady = true;
+  } else if (action === "RECORDING_STARTED") {
+    console.log("Recording started successfully");
+    // Notify background for badge
+    chrome.runtime.sendMessage({ action: "startRecording" });
+  } else if (action === "RECORDING_COMPLETE") {
+    console.log("Recording complete, received data");
+    recordingData = data;
+    // Notify background to clear badge
+    chrome.runtime.sendMessage({ action: "stopRecording" });
+    processRecording();
+  } else if (action === "RECORDING_ERROR") {
+    console.error("Recording error from injected script:", data.error);
+    showError(data.error);
+    updateStatus("Ready to record", "");
+    isRecording = false;
+    document.getElementById("meeting-ai-start").style.display = "block";
+    document.getElementById("meeting-ai-stop").style.display = "none";
+    stopTimer();
+  }
+});
+
+// Inject the script as soon as possible
+injectRecorderScript();
 
 // Create floating UI overlay
 function createOverlay() {
@@ -22,8 +66,8 @@ function createOverlay() {
   overlay.id = "meeting-ai-overlay";
   overlay.innerHTML = `
     <div class="meeting-ai-header">
-      <span class="meeting-ai-title">??? Meeting AI</span>
-      <button id="meeting-ai-minimize" class="meeting-ai-btn-icon">?</button>
+      <span class="meeting-ai-title">Meeting AI</span>
+      <button id="meeting-ai-minimize" class="meeting-ai-btn-icon">X</button>
     </div>
     <div class="meeting-ai-content">
       <div class="meeting-ai-status">
@@ -103,38 +147,16 @@ function setupEventListeners() {
 // Start recording
 async function startRecording() {
   try {
+    if (!injectedScriptReady) {
+      throw new Error("Recorder not ready. Please refresh the page.");
+    }
+
     updateStatus("Requesting permissions...", "warning");
 
-    // Request tab audio capture
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: false,
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        sampleRate: 44100,
-      },
-    });
+    // Send message to injected script to start recording
+    window.postMessage({ action: "START_RECORDING" }, "*");
 
-    // Setup MediaRecorder
-    mediaRecorder = new MediaRecorder(stream, {
-      mimeType: "audio/webm",
-    });
-
-    audioChunks = [];
-    transcriptSegments = [];
-
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        audioChunks.push(event.data);
-      }
-    };
-
-    mediaRecorder.onstop = async () => {
-      await processRecording();
-    };
-
-    // Start recording
-    mediaRecorder.start();
+    // Update state
     isRecording = true;
     recordingStartTime = Date.now();
 
@@ -145,23 +167,44 @@ async function startRecording() {
     updateStatus("Recording...", "recording");
     startTimer();
 
-    console.log("Recording started");
+    console.log("Recording request sent to injected script");
   } catch (error) {
     console.error("Failed to start recording:", error);
-    showError(
-      "Failed to start recording. Please make sure you granted permission to record audio."
-    );
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+
+    let errorMessage = "Failed to start recording.";
+
+    if (error.name === "NotAllowedError") {
+      errorMessage =
+        "? Permission denied. Please allow screen sharing and check 'Share tab audio'.";
+    } else if (error.name === "NotSupportedError") {
+      errorMessage = "? Screen capture not supported in this browser.";
+    } else if (error.name === "NotFoundError") {
+      errorMessage = "? No audio/video source found.";
+    } else if (error.name === "InvalidStateError") {
+      errorMessage = "? Invalid state. Please refresh the page and try again.";
+    } else if (error.name === "NotReadableError") {
+      errorMessage =
+        "? Cannot access media device. Close other apps using audio.";
+    } else if (error.message) {
+      errorMessage = `? Error: ${error.name} - ${error.message}`;
+    }
+
+    showError(errorMessage);
+    updateStatus("Ready to record", "");
   }
 }
 
 // Stop recording
 async function stopRecording() {
-  if (mediaRecorder && isRecording) {
-    mediaRecorder.stop();
-    isRecording = false;
+  if (isRecording) {
+    console.log("Stopping recording...");
 
-    // Stop all tracks
-    mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+    // Send message to injected script to stop recording
+    window.postMessage({ action: "STOP_RECORDING" }, "*");
+
+    isRecording = false;
 
     // Update UI
     document.getElementById("meeting-ai-start").style.display = "block";
@@ -169,7 +212,7 @@ async function stopRecording() {
     updateStatus("Processing...", "processing");
     stopTimer();
 
-    console.log("Recording stopped");
+    console.log("Stop recording request sent");
   }
 }
 
@@ -178,13 +221,27 @@ async function processRecording() {
   try {
     updateStatus("Transcribing audio...", "processing");
 
-    // Create blob from chunks
-    const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+    if (!recordingData || !recordingData.audio) {
+      throw new Error("No recording data available");
+    }
+
+    // Convert base64 back to blob
+    const response = await fetch(recordingData.audio);
+    const audioBlob = await response.blob();
+
+    const mimeType = recordingData.mimeType || "audio/webm";
+    const fileExtension = mimeType.includes("ogg") ? "ogg" : "webm";
+
+    console.log("Audio size:", (audioBlob.size / 1024 / 1024).toFixed(2), "MB");
 
     // Convert to file
-    const audioFile = new File([audioBlob], "meeting-recording.webm", {
-      type: "audio/webm",
-    });
+    const audioFile = new File(
+      [audioBlob],
+      `meeting-recording.${fileExtension}`,
+      {
+        type: mimeType,
+      }
+    );
 
     console.log(
       "Audio file size:",
@@ -286,13 +343,13 @@ function displaySummary(analysis) {
   summaryDiv.className = "meeting-ai-summary";
   summaryDiv.innerHTML = `
     <div class="meeting-ai-summary-section">
-      <h4>?? Summary</h4>
+      <h4>Summary</h4>
       <ul>
         ${analysis.summary.map((point) => `<li>${point}</li>`).join("")}
       </ul>
     </div>
     <div class="meeting-ai-summary-section">
-      <h4>? Action Items (${analysis.actionItems.length})</h4>
+      <h4>Action Items (${analysis.actionItems.length})</h4>
       <ul>
         ${analysis.actionItems
           .map(
@@ -306,7 +363,7 @@ function displaySummary(analysis) {
       analysis.keyDecisions.length > 0
         ? `
     <div class="meeting-ai-summary-section">
-      <h4>?? Key Decisions</h4>
+      <h4>Key Decisions</h4>
       <ul>
         ${analysis.keyDecisions
           .map((decision) => `<li>${decision}</li>`)
