@@ -13,8 +13,8 @@
   ],
   "host_permissions": [
     "https://meet.google.com/*",
-    "http://localhost:3002/*",
-    "http://127.0.0.1:3002/*"
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*"
   ],
   "background": {
     "service_worker": "scripts/background.js",
@@ -22,14 +22,26 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://meet.google.com/*"],
-      "js": ["config.js", "scripts/content.js"],
-      "css": ["styles/overlay.css"],
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
+        "config.js",
+        "scripts/content.js"
+      ],
+      "css": [
+        "styles/overlay.css"
+      ],
       "run_at": "document_end"
     },
     {
-      "matches": ["http://localhost:3002/results*", "http://127.0.0.1:3002/results*"],
-      "js": ["scripts/results-loader.js"],
+      "matches": [
+        "http://localhost:3002/results*",
+        "http://127.0.0.1:3002/results*"
+      ],
+      "js": [
+        "scripts/results-loader.js"
+      ],
       "run_at": "document_start"
     }
   ],
@@ -48,9 +60,13 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["scripts/injected.js", "scripts/injected-recorder.js"],
-      "matches": ["https://meet.google.com/*"]
+      "resources": [
+        "scripts/injected.js",
+        "scripts/injected-recorder.js"
+      ],
+      "matches": [
+        "https://meet.google.com/*"
+      ]
     }
   ]
 }
-
