@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting AI Assistant</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <div class="popup-header">
+      <h1>??? Meeting AI</h1>
+      <p class="popup-subtitle">Your intelligent meeting assistant</p>
+    </div>
+
+    <!-- Status -->
+    <div id="status-section" class="popup-section">
+      <div class="status-card">
+        <div class="status-icon">?</div>
+        <div class="status-text">
+          <div class="status-title">Ready to Record</div>
+          <div class="status-subtitle">Join a Google Meet to start</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Meeting -->
+    <div id="last-meeting-section" class="popup-section" style="display: none;">
+      <h2 class="section-title">Last Meeting</h2>
+      <div class="meeting-card">
+        <div class="meeting-meta">
+          <span id="meeting-date">Just now</span>
+          <span id="meeting-duration">5:23</span>
+        </div>
+        <div class="meeting-stats">
+          <div class="stat">
+            <span class="stat-value" id="summary-count">5</span>
+            <span class="stat-label">Key Points</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="tasks-count">3</span>
+            <span class="stat-label">Tasks</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="decisions-count">2</span>
+            <span class="stat-label">Decisions</span>
+          </div>
+        </div>
+        <button id="view-details-btn" class="btn btn-primary">View Details</button>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="popup-section">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="actions-grid">
+        <button id="open-webapp-btn" class="action-btn">
+          <span class="action-icon">??</span>
+          <span class="action-label">Open Web App</span>
+        </button>
+        <button id="settings-btn" class="action-btn">
+          <span class="action-icon">??</span>
+          <span class="action-label">Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="popup-section">
+      <div class="info-card">
+        <strong>How to use:</strong>
+        <ol>
+          <li>Join a Google Meet meeting</li>
+          <li>Click "Start Recording" in the overlay</li>
+          <li>Allow audio capture permission</li>
+          <li>Meeting will be transcribed in real-time</li>
+          <li>View results when done!</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="popup-footer">
+      <p>Made with ?? for productive meetings</p>
+      <a href="https://github.com/anhkhoadinh/hackathon-team-11" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="details-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Meeting Details</h2>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
