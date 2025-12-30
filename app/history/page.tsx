@@ -68,11 +68,26 @@ export default function HistoryPage() {
   const filteredMeetings = meetings.filter(meeting => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
-    return (
-      meeting.title.toLowerCase().includes(query) ||
-      meeting.participants.some(p => p.toLowerCase().includes(query)) ||
-      meeting.summary.some(s => s.toLowerCase().includes(query))
-    );
+    
+    // Check title
+    if (meeting.title.toLowerCase().includes(query)) return true;
+    
+    // Check participants
+    if (meeting.participants.some(p => p.toLowerCase().includes(query))) return true;
+    
+    // Check summary - handle both array and object formats
+    if (meeting.summary) {
+      if (Array.isArray(meeting.summary)) {
+        // Old format: array of strings
+        if (meeting.summary.some(s => s.toLowerCase().includes(query))) return true;
+      } else if (typeof meeting.summary === 'object') {
+        // New format: analysis object
+        const summaryStr = JSON.stringify(meeting.summary).toLowerCase();
+        if (summaryStr.includes(query)) return true;
+      }
+    }
+    
+    return false;
   });
 
   const formatDuration = (seconds: number) => {
@@ -199,7 +214,7 @@ export default function HistoryPage() {
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition"
             >
-              {sortOrder === 'asc' ? '? Ascending' : '? Descending'}
+              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
 
             {(startDate || endDate || sourceFilter !== 'all' || searchQuery) && (
