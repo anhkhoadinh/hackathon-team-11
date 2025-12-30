@@ -298,12 +298,12 @@ async function processRecording() {
     });
 
     // Show summary
-    displaySummary(analysisData);
+    displaySummary(analysisData, transcriptData);
     updateStatus("Complete!", "success");
 
     // Notify user
     showNotification(
-      "Meeting processed successfully! Open extension to view results."
+      "Meeting processed successfully! Click 'View Full Results' for details."
     );
   } catch (error) {
     console.error("Processing failed:", error);
@@ -336,7 +336,7 @@ function displayTranscript(transcriptData) {
 }
 
 // Display summary
-function displaySummary(analysis) {
+function displaySummary(analysis, transcript) {
   const content = document.getElementById("meeting-ai-transcript-content");
 
   const summaryDiv = document.createElement("div");
@@ -373,10 +373,78 @@ function displaySummary(analysis) {
     `
         : ""
     }
+    <div class="meeting-ai-summary-section" style="text-align: center; margin-top: 20px;">
+      <button id="meeting-ai-view-full" class="meeting-ai-btn meeting-ai-btn-primary" style="width: 100%;">
+        View Full Results & Download PDF
+      </button>
+    </div>
   `;
 
   content.appendChild(summaryDiv);
   content.scrollTop = content.scrollHeight;
+
+  // Add click handler for "View Full Results" button
+  const viewFullBtn = document.getElementById("meeting-ai-view-full");
+  if (viewFullBtn) {
+    viewFullBtn.addEventListener("click", () => {
+      openFullResults(analysis, transcript);
+    });
+  }
+}
+
+// Open full results in web app
+function openFullResults(analysis, transcript) {
+  console.log("?? Opening full results in web app...");
+  console.log("?? Analysis data:", analysis);
+  console.log("?? Transcript data:", transcript);
+
+  // Prepare data in MeetingResult format for web app
+  const meetingData = {
+    transcript: {
+      text: transcript.text || "",
+      segments: transcript.segments || [],
+      duration: transcript.duration || 0,
+    },
+    analysis: {
+      summary: analysis.summary || [],
+      actionItems: analysis.actionItems || [],
+      keyDecisions: analysis.keyDecisions || [],
+      participants: analysis.participants || [],
+    },
+    metadata: {
+      fileName: "meeting-recording.webm",
+      fileSize: 0,
+      processedAt: new Date().toISOString(),
+      estimatedCost: 0.4,
+    },
+  };
+
+  console.log("?? Prepared meeting data:", meetingData);
+
+  // Save to Chrome Storage (cross-origin compatible)
+  chrome.storage.local.set({ meetingResults: meetingData }, () => {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "? Error saving to Chrome Storage:",
+        chrome.runtime.lastError
+      );
+      return;
+    }
+
+    console.log("? Meeting data saved to Chrome Storage successfully!");
+
+    // Verify it was saved
+    chrome.storage.local.get(["meetingResults"], (data) => {
+      console.log("?? Verification - Chrome Storage contains:", data);
+    });
+
+    // Open web app in new tab
+    const webAppUrl = CONFIG.API_BASE_URL.replace("/api", "/results");
+    console.log("?? Opening URL:", webAppUrl);
+    window.open(webAppUrl, "_blank");
+
+    console.log("? Opened web app at:", webAppUrl);
+  });
 }
 
 // Utility functions
