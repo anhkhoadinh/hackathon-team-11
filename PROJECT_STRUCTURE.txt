@@ -1,0 +1,14 @@
+meeting-ai
+meeting-ai/.git
+meeting-ai/.git/hooks
+meeting-ai/.git/info
+meeting-ai/.git/logs
+meeting-ai/.git/objects
+meeting-ai/.git/refs
+meeting-ai/app
+meeting-ai/app/api
+meeting-ai/components
+meeting-ai/components/ui
+meeting-ai/lib
+meeting-ai/public
+meeting-ai/types
