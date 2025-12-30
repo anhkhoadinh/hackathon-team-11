@@ -299,6 +299,39 @@ async function processRecording() {
 
     // Show summary
     displaySummary(analysisData, transcriptData);
+
+    // Save to database
+    try {
+      const saveResponse = await fetch(
+        `${API_BASE_URL.replace("/api", "")}/api/meetings`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: `Google Meet - ${new Date().toLocaleDateString()}`,
+            meetingDate: new Date().toISOString(),
+            duration: transcriptData.duration || 0,
+            transcript: transcriptData,
+            analysis: analysisData,
+            source: "extension",
+            fileName: "meeting-recording.webm",
+            fileSize: 0,
+            estimatedCost: 0.4,
+          }),
+        }
+      );
+
+      if (saveResponse.ok) {
+        console.log("? Meeting saved to database");
+      } else {
+        console.warn("?? Failed to save meeting to database (non-critical)");
+      }
+    } catch (saveError) {
+      console.warn("?? Database save error (non-critical):", saveError);
+    }
+
     updateStatus("Complete!", "success");
 
     // Notify user
@@ -341,26 +374,43 @@ function displaySummary(analysis, transcript) {
 
   const summaryDiv = document.createElement("div");
   summaryDiv.className = "meeting-ai-summary";
+
+  // Handle both old format (array) and new format (object)
+  const summaryPoints = Array.isArray(analysis.summary)
+    ? analysis.summary
+    : [
+        ...(analysis.summary?.priorityTasks || []),
+        ...(analysis.summary?.blockersToFollowUp || []).map((b) => `?? ${b}`),
+      ];
+
   summaryDiv.innerHTML = `
     <div class="meeting-ai-summary-section">
       <h4>Summary</h4>
       <ul>
-        ${analysis.summary.map((point) => `<li>${point}</li>`).join("")}
+        ${
+          summaryPoints.length > 0
+            ? summaryPoints.map((point) => `<li>${point}</li>`).join("")
+            : "<li>No summary available</li>"
+        }
       </ul>
     </div>
     <div class="meeting-ai-summary-section">
-      <h4>Action Items (${analysis.actionItems.length})</h4>
+      <h4>Action Items (${analysis.actionItems?.length || 0})</h4>
       <ul>
-        ${analysis.actionItems
-          .map(
-            (item) =>
-              `<li>${item.task} - <strong>${item.assignee}</strong></li>`
-          )
-          .join("")}
+        ${
+          analysis.actionItems && analysis.actionItems.length > 0
+            ? analysis.actionItems
+                .map(
+                  (item) =>
+                    `<li>${item.task} - <strong>${item.assignee}</strong></li>`
+                )
+                .join("")
+            : "<li>No action items</li>"
+        }
       </ul>
     </div>
     ${
-      analysis.keyDecisions.length > 0
+      analysis.keyDecisions && analysis.keyDecisions.length > 0
         ? `
     <div class="meeting-ai-summary-section">
       <h4>Key Decisions</h4>
@@ -406,9 +456,20 @@ function openFullResults(analysis, transcript) {
       duration: transcript.duration || 0,
     },
     analysis: {
-      summary: analysis.summary || [],
+      // Keep full analysis object structure
+      attendance: analysis.attendance || {
+        present: analysis.participants || [],
+        absent: [],
+      },
+      personalProgress: analysis.personalProgress || [],
+      workload: analysis.workload || [],
       actionItems: analysis.actionItems || [],
       keyDecisions: analysis.keyDecisions || [],
+      summary: analysis.summary || {
+        blockersToFollowUp: [],
+        priorityTasks: [],
+        responsibilities: [],
+      },
       participants: analysis.participants || [],
     },
     metadata: {

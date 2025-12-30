@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Meeting {
+  id            Int      @id @default(autoincrement())
+  title         String   @db.VarChar(500)
+  meetingDate   DateTime @map("meeting_date")
+  duration      Int      // Duration in seconds
+  transcript    String   @db.Text
+  summary       Json     // Full analysis object (NEW) or array of strings (OLD)
+  actionItems   Json     @map("action_items") // Array of ActionItem objects
+  keyDecisions  Json     @map("key_decisions") // Array of strings
+  participants  Json     // Array of strings
+  source        String   @db.VarChar(50) // 'upload' or 'extension'
+  fileName      String?  @map("file_name") @db.VarChar(500)
+  fileSize      Int?     @map("file_size")
+  estimatedCost Float    @map("estimated_cost")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([meetingDate])
+  @@index([source])
+  @@index([createdAt])
+  @@map("meetings")
+}

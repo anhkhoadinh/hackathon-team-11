@@ -31,9 +31,17 @@ Analyze the transcript and extract information in these 6 sections:
    - Blockers: List of blockers or difficulties (if none, indicate clearly)
 
 3. WORKLOAD ASSESSMENT:
-   - Identify who is overloaded
-   - Identify who has normal workload
-   - Identify who is free/available
+   IMPORTANT: Infer workload status from the context:
+   - OVERLOADED: Has blockers, multiple tasks, mentions being busy/overwhelmed, tight deadlines
+   - NORMAL: Has standard number of tasks, no major blockers, on track
+   - FREE: Completed tasks, available for new work, light workload mentioned
+   
+   If workload is not explicitly mentioned, INFER it from:
+   - Number of tasks (today's work)
+   - Presence of blockers
+   - Tone/urgency in updates
+   
+   You MUST assign a status to EACH person who gave an update.
 
 4. NEW TASKS & TASK REALLOCATION:
    For each new task or reassigned task, extract:
