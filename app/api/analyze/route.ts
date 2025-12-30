@@ -5,27 +5,84 @@ import { MeetingAnalysis } from '@/types';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes timeout
 
-const ANALYSIS_PROMPT = `You are an expert meeting analyst. Analyze the following meeting transcript and extract key information.
+const ANALYSIS_PROMPT = `You are an expert meeting analyst specializing in daily standup meetings. Analyze the following meeting transcript and extract information according to the standard daily meeting template.
 
-Your task is to:
-1. Create a concise summary with 5-7 main points discussed
-2. Identify all action items/tasks mentioned, along with who should do them (if mentioned)
-3. Extract key decisions that were made
-4. List all participants/people mentioned in the meeting
+Analyze the transcript and extract information in these 6 sections:
 
-IMPORTANT for Action Items:
-- Look for phrases like "will do", "should do", "needs to", "has to", "responsible for", "assigned to"
-- Extract the person's name mentioned near the task
-- If no specific person is mentioned, use "Unassigned"
+1. OPENING & ATTENDANCE:
+   - List all members who are present
+   - List all members who are absent (with reason if mentioned)
+
+2. PERSONAL PROGRESS UPDATES:
+   For each member who reported, extract:
+   - Yesterday's completed work: List of tasks completed yesterday
+   - Today's planned work: List of tasks planned for today
+   - Blockers: List of blockers or difficulties (if none, indicate clearly)
+
+3. WORKLOAD ASSESSMENT:
+   - Identify who is overloaded
+   - Identify who has normal workload
+   - Identify who is free/available
+
+4. NEW TASKS & TASK REALLOCATION:
+   For each new task or reassigned task, extract:
+   - Task description: Brief description of the task
+   - Assignee: Person responsible for the task
+   - Deadline/ETA: Extract if mentioned
+   - Priority level: high/medium/low if mentioned
+   - Technical requirements or notes: Extract if mentioned
+
+5. KEY DECISIONS:
+   - Extract important decisions made during the meeting
+   - Include: plan changes, technical approach choices, deadline changes
+
+6. SUMMARY & NEXT STEPS:
+   - Blockers that need follow-up
+   - Priority tasks for today
+   - Responsibilities: who is responsible for what, with deadlines if mentioned
+
+IMPORTANT:
+- Extract information in the same language as the transcript
+- Use exact names as mentioned in the transcript
+- If information is not mentioned, use empty arrays or null values
+- Be thorough but concise
 
 Return ONLY valid JSON in this exact format (no markdown, no code blocks):
 {
-  "summary": ["point 1", "point 2", "point 3", "point 4", "point 5"],
+  "attendance": {
+    "present": ["Person1", "Person2"],
+    "absent": [{"name": "Person3", "reason": "reason if mentioned"}]
+  },
+  "personalProgress": [
+    {
+      "member": "Person1",
+      "yesterday": ["task 1", "task 2"],
+      "today": ["task 3", "task 4"],
+      "blockers": ["blocker 1"] or []
+    }
+  ],
+  "workload": [
+    {"member": "Person1", "status": "overloaded"},
+    {"member": "Person2", "status": "normal"},
+    {"member": "Person3", "status": "free"}
+  ],
   "actionItems": [
-    {"task": "task description", "assignee": "PersonName", "dueDate": null},
-    {"task": "another task", "assignee": "AnotherPerson", "dueDate": null}
+    {
+      "task": "task description",
+      "assignee": "PersonName",
+      "dueDate": "deadline if mentioned" or null,
+      "priority": "high/medium/low" or null,
+      "technicalNotes": "notes if mentioned" or null
+    }
   ],
   "keyDecisions": ["decision 1", "decision 2"],
+  "summary": {
+    "blockersToFollowUp": ["blocker 1", "blocker 2"],
+    "priorityTasks": ["task 1", "task 2"],
+    "responsibilities": [
+      {"person": "Person1", "task": "task description", "deadline": "deadline if mentioned" or null}
+    ]
+  },
   "participants": ["Person1", "Person2", "Person3"]
 }`;
 
@@ -49,7 +106,7 @@ export async function POST(request: NextRequest) {
     // Enhance prompt based on language if provided
     let enhancedPrompt = ANALYSIS_PROMPT;
     if (language === 'vi') {
-      enhancedPrompt += '\n\nIMPORTANT: The transcript is in Vietnamese. Extract information in Vietnamese and use Vietnamese names properly.';
+      enhancedPrompt += '\n\nIMPORTANT: The transcript is in Vietnamese. Extract ALL information in Vietnamese. Use Vietnamese names properly. Return Vietnamese text for all fields.';
     } else if (language === 'ja') {
       enhancedPrompt += '\n\nIMPORTANT: The transcript is in Japanese. Extract information in Japanese and use Japanese names properly.';
     }
@@ -80,9 +137,15 @@ export async function POST(request: NextRequest) {
     // Parse the JSON response
     const analysis: MeetingAnalysis = JSON.parse(content);
 
-    // Validate the response structure
-    if (!analysis.summary || !Array.isArray(analysis.summary)) {
-      analysis.summary = [];
+    // Validate the response structure with backward compatibility
+    if (!analysis.attendance) {
+      analysis.attendance = { present: [], absent: [] };
+    }
+    if (!analysis.personalProgress || !Array.isArray(analysis.personalProgress)) {
+      analysis.personalProgress = [];
+    }
+    if (!analysis.workload || !Array.isArray(analysis.workload)) {
+      analysis.workload = [];
     }
     if (!analysis.actionItems || !Array.isArray(analysis.actionItems)) {
       analysis.actionItems = [];
@@ -90,11 +153,19 @@ export async function POST(request: NextRequest) {
     if (!analysis.keyDecisions || !Array.isArray(analysis.keyDecisions)) {
       analysis.keyDecisions = [];
     }
+    if (!analysis.summary || typeof analysis.summary !== 'object') {
+      analysis.summary = {
+        blockersToFollowUp: [],
+        priorityTasks: [],
+        responsibilities: []
+      };
+    }
     if (!analysis.participants || !Array.isArray(analysis.participants)) {
-      analysis.participants = [];
+      // Extract from attendance if not provided
+      analysis.participants = analysis.attendance.present || [];
     }
 
-    console.log(`Analysis completed: ${analysis.summary.length} points, ${analysis.actionItems.length} tasks, ${analysis.keyDecisions.length} decisions`);
+    console.log(`Analysis completed: ${analysis.personalProgress.length} progress updates, ${analysis.actionItems.length} tasks, ${analysis.keyDecisions.length} decisions`);
 
     return NextResponse.json(analysis);
   } catch (error: any) {
