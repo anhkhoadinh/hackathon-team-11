@@ -6,6 +6,17 @@ export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes timeout
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB (Whisper API limit)
+
+// CORS headers for Chrome Extension
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
 const ALLOWED_TYPES = [
   'audio/mpeg',
   'audio/mp3',
@@ -29,7 +40,7 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -37,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
         { error: `File size exceeds 25MB limit. Current size: ${(file.size / 1024 / 1024).toFixed(2)}MB` },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -45,7 +56,7 @@ export async function POST(request: NextRequest) {
     if (!ALLOWED_TYPES.includes(file.type) && !file.name.match(/\.(mp3|wav|m4a|mp4|mpeg|webm)$/i)) {
       return NextResponse.json(
         { error: 'Invalid file type. Supported: mp3, wav, m4a, mp4, webm' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -81,27 +92,27 @@ export async function POST(request: NextRequest) {
 
     console.log(`Transcription completed: ${duration.toFixed(2)}s, ${segments.length} segments`);
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, { headers: corsHeaders });
   } catch (error: any) {
     console.error('Transcription error:', error);
     
     if (error.status === 401) {
       return NextResponse.json(
         { error: 'Invalid OpenAI API key. Please check your configuration.' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
     if (error.status === 413) {
       return NextResponse.json(
         { error: 'File too large for OpenAI API' },
-        { status: 413 }
+        { status: 413, headers: corsHeaders }
       );
     }
 
     return NextResponse.json(
       { error: error.message || 'Failed to transcribe audio' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

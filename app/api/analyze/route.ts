@@ -5,6 +5,17 @@ import { MeetingAnalysis } from '@/types';
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes timeout
 
+// CORS headers for Chrome Extension
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 const ANALYSIS_PROMPT = `You are an expert meeting analyst. Analyze the following meeting transcript and extract key information.
 
 Your task is to:
@@ -40,7 +51,7 @@ export async function POST(request: NextRequest) {
     if (!transcript || typeof transcript !== 'string') {
       return NextResponse.json(
         { error: 'Invalid transcript provided' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -88,20 +99,20 @@ export async function POST(request: NextRequest) {
 
     console.log(`Analysis completed: ${analysis.summary.length} points, ${analysis.actionItems.length} tasks, ${analysis.keyDecisions.length} decisions`);
 
-    return NextResponse.json(analysis);
+    return NextResponse.json(analysis, { headers: corsHeaders });
   } catch (error: any) {
     console.error('Analysis error:', error);
     
     if (error.status === 401) {
       return NextResponse.json(
         { error: 'Invalid OpenAI API key. Please check your configuration.' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
     return NextResponse.json(
       { error: error.message || 'Failed to analyze transcript' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
