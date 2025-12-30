@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meeting AI Assistant - Transcribe & Analyze Meetings",
+  title: "MeetingMind AI - Turn your meetings into actionable insights instantly",
   description: "Transform meeting recordings into actionable insights with AI-powered transcription and analysis using OpenAI Whisper and GPT-4",
 };
 
