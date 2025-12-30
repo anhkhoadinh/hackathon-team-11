@@ -26,6 +26,8 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 
 ## Getting Started ??
 
+> **?? Team Members:** See **[SETUP_FOR_TEAM.md](./SETUP_FOR_TEAM.md)** for quick setup with custom ports!
+
 ### Prerequisites
 
 - Node.js 18+ installed
@@ -63,7 +65,7 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Usage ??
+## Usage
 
 1. **Upload Recording**: Drag and drop your audio/video file or click to browse
 2. **Wait for Processing**: The app will:
@@ -77,7 +79,7 @@ Transform your meeting recordings into actionable insights with AI-powered trans
    - Full Transcript with timestamps
 4. **Download PDF**: Get a professional report for sharing
 
-## Cost Estimation ??
+## Cost Estimation
 
 | Duration | Whisper Cost | GPT-4 Cost | Total |
 |----------|--------------|------------|-------|
@@ -87,7 +89,7 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 
 **Free tier**: OpenAI provides $5 credit = ~12 meetings (60 min each)
 
-## Project Structure ??
+## Project Structure
 
 ```
 meeting-ai/

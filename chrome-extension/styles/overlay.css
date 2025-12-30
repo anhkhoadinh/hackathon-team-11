@@ -123,6 +123,23 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
+.meeting-ai-btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.meeting-ai-btn-warning:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+#meeting-ai-recording-controls {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
 .meeting-ai-transcript {
   border-top: 1px solid #e5e7eb;
   padding-top: 12px;
