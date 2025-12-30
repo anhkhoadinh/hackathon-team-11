@@ -15,7 +15,6 @@ const initialSteps: ProcessingStep[] = [
   { id: 'upload', label: 'Upload', status: 'pending' },
   { id: 'transcribe', label: 'Transcribe', status: 'pending' },
   { id: 'analyze', label: 'Analyze', status: 'pending' },
-  { id: 'generate', label: 'Generate PDF', status: 'pending' },
   { id: 'complete', label: 'Complete', status: 'pending' },
 ];
 
@@ -90,7 +89,7 @@ export default function Home() {
       console.log('Analysis complete:', analysisData);
 
       updateStep('analyze', 'completed');
-      updateStep('generate', 'processing');
+      updateStep('complete', 'processing');
 
       // Prepare result
       const meetingResult: MeetingResult = {
@@ -108,10 +107,9 @@ export default function Home() {
         },
       };
 
-      setResult(meetingResult);
-
-      updateStep('generate', 'completed');
+      // Only set result and mark complete when all steps are done
       updateStep('complete', 'completed');
+      setResult(meetingResult);
       
       setAppState('complete');
     } catch (err: any) {
@@ -240,9 +238,12 @@ export default function Home() {
             </div>
           )}
 
-          {/* Complete State */}
+          {/* Complete State - Show timeline and results */}
           {appState === 'complete' && result && (
-            <div className="fade-in-up">
+            <div className="space-y-6 fade-in-up">
+              {/* Keep timeline visible after completion */}
+              <ProcessingStatus steps={steps} onRetry={handleReset} />
+              {/* Show AI results only when complete */}
               <ResultDisplay 
                 result={result} 
                 onDownloadPDF={handleDownloadPDF}

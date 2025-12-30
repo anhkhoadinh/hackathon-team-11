@@ -170,7 +170,9 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
                   Currently: {currentStep.label}
                 </p>
                 <p className="text-sm text-slate-600">
-                  This may take a few minutes depending on file size. Please don't close this window.
+                  {currentStep.id === 'analyze' 
+                    ? 'AI is analyzing your meeting content. This may take a few minutes. Please wait...'
+                    : 'This may take a few minutes depending on file size. Please don\'t close this window.'}
                 </p>
               </div>
             </div>
