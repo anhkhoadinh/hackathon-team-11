@@ -1,21 +1,30 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Upload, FileAudio, FileVideo, X, Sparkles, CheckCircle2, Clock, DollarSign, Zap } from 'lucide-react';
+import { Upload, FileAudio, FileVideo, X, Sparkles, CheckCircle2, Clock, DollarSign, Zap, Globe } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { formatFileSize, estimateCost } from '@/lib/utils';
 
+type Language = 'vi' | 'en' | 'ja';
+
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
   disabled?: boolean;
-  language?: string;
+  language?: Language;
+  onLanguageChange?: (language: Language) => void;
 }
+
+const languages: Array<{ value: Language; label: string; flag: string }> = [
+  { value: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
+  { value: 'en', label: 'English', flag: '🇺🇸' },
+  { value: 'ja', label: '日本語', flag: '🇯🇵' },
+];
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 const ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'mp4', 'webm', 'mpeg'];
 
-export default function FileUpload({ onFileSelect, disabled, language }: FileUploadProps) {
+export default function FileUpload({ onFileSelect, disabled, language = 'en', onLanguageChange }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string>('');
@@ -169,6 +178,30 @@ export default function FileUpload({ onFileSelect, disabled, language }: FileUpl
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     <span>MP3, WAV, M4A, MP4, WebM • Max 25MB</span>
                   </div>
+
+                  {/* Transcript Language Selector */}
+                  {onLanguageChange && (
+                    <div className="mt-4 flex items-center justify-center">
+                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/80 backdrop-blur-sm rounded-[8px] border border-slate-200 shadow-sm">
+                        <Globe className="h-3.5 w-3.5 text-[#25C9D0]" />
+                        <label htmlFor="transcript-language" className="text-xs font-semibold text-slate-700">
+                          Transcript Language:
+                        </label>
+                        <select
+                          id="transcript-language"
+                          value={language}
+                          onChange={(e) => onLanguageChange(e.target.value as Language)}
+                          className="ml-1 px-2 py-1 rounded-[6px] border border-slate-300 bg-white text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all cursor-pointer hover:border-[#25C9D0]/50"
+                        >
+                          {languages.map((lang) => (
+                            <option key={lang.value} value={lang.value}>
+                              {lang.flag} {lang.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
                 </label>
 
                 {error && (

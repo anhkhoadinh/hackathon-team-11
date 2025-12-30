@@ -195,30 +195,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            
-            {/* Language Selector */}
-            {appState === 'upload' && (
-              <div className="flex items-center gap-3 w-full sm:w-auto bg-white rounded-[12px] p-2 border-2 border-slate-200 shadow-sm">
-                <div className="flex items-center gap-2 px-3">
-                  <Globe className="h-4 w-4 text-[#25C9D0]" />
-                  <label htmlFor="language-select" className="text-sm font-bold text-slate-700 whitespace-nowrap">
-                    Language:
-                  </label>
-                </div>
-                <select
-                  id="language-select"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as Language)}
-                  className="px-4 py-2 rounded-[10px] border-2 border-slate-200 bg-white text-slate-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all w-full sm:w-auto cursor-pointer hover:border-[#25C9D0]/50"
-                >
-                  {languages.map((lang) => (
-                    <option key={lang.value} value={lang.value}>
-                      {lang.flag} {lang.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -229,7 +205,11 @@ export default function Home() {
           {/* Upload State */}
           {appState === 'upload' && (
             <div className="fade-in-up">
-              <FileUpload onFileSelect={handleFileSelect} language={language} />
+              <FileUpload 
+                onFileSelect={handleFileSelect} 
+                language={language}
+                onLanguageChange={setLanguage}
+              />
             </div>
           )}
 
