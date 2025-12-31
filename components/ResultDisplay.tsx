@@ -90,10 +90,24 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
   };
 
   const getWorkloadIcon = (status: string) => {
-    if (status === 'overloaded') return '🔥';
-    if (status === 'normal') return '✅';
-    if (status === 'free') return '🌟';
-    return '📊';
+    if (status === 'overloaded') return AlertCircle;
+    if (status === 'normal') return CheckCircle2;
+    if (status === 'free') return Sparkles;
+    return TrendingUp;
+  };
+
+  const getWorkloadIconBg = (status: string) => {
+    if (status === 'overloaded') return 'bg-[#25C9D0]/10';
+    if (status === 'normal') return 'bg-[#14B8A6]/10';
+    if (status === 'free') return 'bg-[#14B8A6]/10';
+    return 'bg-[#25C9D0]/10';
+  };
+
+  const getWorkloadIconColor = (status: string) => {
+    if (status === 'overloaded') return 'text-[#25C9D0]';
+    if (status === 'normal') return 'text-[#14B8A6]';
+    if (status === 'free') return 'text-[#14B8A6]';
+    return 'text-[#25C9D0]';
   };
 
   const CopyButton = ({ section, text }: { section: string; text: string }) => (
@@ -351,7 +365,12 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                         className="group flex items-center justify-between p-4 bg-white rounded-[10px] border border-slate-200 hover:border-[#25C9D0]/30 hover:bg-[#25C9D0]/5 transition-all duration-200"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xl">{getWorkloadIcon(item.status)}</span>
+                          <div className={`w-8 h-8 rounded-[8px] ${getWorkloadIconBg(item.status)} flex items-center justify-center`}>
+                            {(() => {
+                              const IconComponent = getWorkloadIcon(item.status);
+                              return <IconComponent className={`h-4 w-4 ${getWorkloadIconColor(item.status)}`} />;
+                            })()}
+                          </div>
                           <span className="font-semibold text-slate-900">{item.member}</span>
                         </div>
                         <span className={`inline-flex items-center px-3 py-1.5 rounded-[8px] text-xs font-semibold border ${getWorkloadColor(item.status)}`}>

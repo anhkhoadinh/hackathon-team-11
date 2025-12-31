@@ -205,8 +205,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                 </label>
 
                 {error && (
-                  <div className="mt-6 p-4 bg-red-50 border-2 border-red-200 rounded-[12px] fade-in-up">
-                    <p className="text-sm font-medium text-red-600">{error}</p>
+                  <div className="mt-6 p-4 bg-red-50/50 border-2 border-red-200 rounded-[12px] fade-in-up">
+                    <p className="text-sm font-medium text-red-700">{error}</p>
                   </div>
                 )}
               </div>
@@ -279,15 +279,15 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
 
                   {/* Metadata Pills */}
                   <div className="flex flex-wrap gap-3">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#25C9D0]/10 to-[#14B8A6]/10 border border-[#25C9D0]/30 text-[#1BA1A8] rounded-[10px] text-sm font-bold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#25C9D0]/10 border border-[#25C9D0]/20 text-[#1BA1A8] rounded-[10px] text-sm font-semibold">
                       <Clock className="h-4 w-4" />
                       <span>~{estimatedDuration} min</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 rounded-[10px] text-sm font-bold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#14B8A6]/10 border border-[#14B8A6]/20 text-[#0F9488] rounded-[10px] text-sm font-semibold">
                       <DollarSign className="h-4 w-4" />
                       <span>${estimatedCostValue.toFixed(2)} est.</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 text-violet-700 rounded-[10px] text-sm font-bold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#25C9D0]/10 border border-[#25C9D0]/20 text-[#1BA1A8] rounded-[10px] text-sm font-semibold">
                       <Sparkles className="h-4 w-4" />
                       <span>AI Analysis</span>
                     </div>
@@ -309,8 +309,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
 
             {/* Error Display */}
             {error && (
-              <div className="mt-6 p-4 bg-red-50 border-2 border-red-200 rounded-[12px] fade-in-up">
-                <p className="text-sm font-medium text-red-600">{error}</p>
+              <div className="mt-6 p-4 bg-red-50/50 border-2 border-red-200 rounded-[12px] fade-in-up">
+                <p className="text-sm font-medium text-red-700">{error}</p>
               </div>
             )}
 
