@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, FileText, Filter, Download, Search, ChevronDown, Sparkles, History } from 'lucide-react';
 import Link from 'next/link';
 import MeetingCard from '@/components/MeetingCard';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import Header from '@/components/Header';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Meeting {
@@ -120,40 +120,12 @@ export default function HistoryPage() {
       </div>
 
       {/* Modern Header */}
-      <header className="sticky top-0 z-50 glass border-b border-[#25C9D0]/10 shadow-lg backdrop-blur-xl">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-7xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            {/* Logo & Brand */}
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] rounded-[16px] blur-lg opacity-60"></div>
-                <div className="relative flex items-center justify-center w-14 h-14 rounded-[16px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] text-white shadow-xl shadow-[#25C9D0]/30">
-                  <History className="h-7 w-7" strokeWidth={2.5} />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold gradient-text flex items-center gap-2">
-                  {t('history.title')}
-                </h1>
-                <p className="text-sm text-slate-600 hidden sm:block mt-0.5 font-medium">
-                  {t('history.subtitle')}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-              <LanguageSwitcher />
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all shadow-lg hover:shadow-xl shadow-[#25C9D0]/30"
-              >
-                <Sparkles className="w-4 h-4" />
-                {t('header.newMeeting')}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        icon={<History className="h-7 w-7" strokeWidth={2.5} />}
+        title={t('history.title')}
+        subtitle={t('history.subtitle')}
+        showNewMeetingLink={true}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">

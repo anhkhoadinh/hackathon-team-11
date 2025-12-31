@@ -150,7 +150,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                   </div>
 
                   {/* Hero Text */}
-                  <h3 className="text-4xl font-bold text-slate-900 mb-4 leading-tight">
+                  <h3 className="text-4xl font-bold text-slate-600 mb-4 leading-tight">
                     {t('upload.title')}
                   </h3>
                   <p className="text-lg text-slate-600 mb-3 max-w-2xl">
@@ -162,18 +162,6 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                   <p className="text-sm text-slate-500 mb-8">
                     {t('upload.description')}
                   </p>
-
-                  {/* Format Support */}
-                  <div className="flex items-center justify-center gap-6 mb-8">
-                    <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-[12px] border border-slate-200 shadow-sm">
-                      <FileAudio className="h-5 w-5 text-[#25C9D0]" />
-                      <span className="text-sm font-semibold text-slate-700">{t('upload.audioFiles')}</span>
-                    </div>
-                    <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-[12px] border border-slate-200 shadow-sm">
-                      <FileVideo className="h-5 w-5 text-[#25C9D0]" />
-                      <span className="text-sm font-semibold text-slate-700">{t('upload.videoFiles')}</span>
-                    </div>
-                  </div>
 
                   {/* File Info */}
                   <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
@@ -193,7 +181,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                           id="transcript-language"
                           value={language}
                           onChange={(e) => onLanguageChange(e.target.value as Language)}
-                          className="ml-1 px-2 py-1 rounded-[6px] border border-slate-300 bg-white text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all cursor-pointer hover:border-[#25C9D0]/50"
+                          className="ml-1 px-2 py-1 rounded-[6px] border border-slate-300 bg-white text-slate-600 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all cursor-pointer hover:border-[#25C9D0]/50"
                         >
                           {languages.map((lang) => (
                             <option key={lang.value} value={lang.value}>
@@ -220,7 +208,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                     <Zap className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 mb-1">{t('upload.features.aiPowered.title')}</h4>
+                    <h4 className="font-bold text-sm text-slate-600 mb-1">{t('upload.features.aiPowered.title')}</h4>
                     <p className="text-xs text-slate-600">{t('upload.features.aiPowered.description')}</p>
                   </div>
                 </div>
@@ -230,7 +218,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                     <Clock className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 mb-1">{t('upload.features.fastProcessing.title')}</h4>
+                    <h4 className="font-bold text-sm text-slate-600 mb-1">{t('upload.features.fastProcessing.title')}</h4>
                     <p className="text-xs text-slate-600">{t('upload.features.fastProcessing.description')}</p>
                   </div>
                 </div>
@@ -240,7 +228,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                     <DollarSign className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 mb-1">{t('upload.features.affordable.title')}</h4>
+                    <h4 className="font-bold text-sm text-slate-600 mb-1">{t('upload.features.affordable.title')}</h4>
                     <p className="text-xs text-slate-600">{t('upload.features.affordable.description')}</p>
                   </div>
                 </div>
@@ -272,7 +260,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
 
                 {/* File Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 text-xl mb-2 truncate">
+                  <h3 className="font-bold text-slate-600 text-xl mb-2 truncate">
                     {selectedFile.name}
                   </h3>
                   <p className="text-sm text-slate-600 mb-4">
