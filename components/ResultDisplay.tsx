@@ -4,7 +4,8 @@ import { useState, useMemo } from 'react';
 import { 
   Download, Copy, CheckCircle, FileText, ListTodo, Target, Users, Search, X, 
   CheckCircle2, XCircle, Clock, AlertCircle, TrendingUp, Calendar, 
-  Sparkles, User, Award, Zap, ArrowRight
+  Sparkles, User, Award, Zap, ArrowRight, CheckCircle2 as CheckCircleIcon,
+  Star, Flag, Rocket, Lightbulb, Shield, CheckSquare
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
@@ -230,45 +231,57 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
 
       {/* Tabs Navigation - Enhanced */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-start overflow-x-auto glass border-[#25C9D0]/20 p-1.5 gap-1 shadow-lg bg-white/80">
-          <TabsTrigger value="overview" className="gap-2">
-            <Users className="h-4 w-4" />
-            {t('results.tabs.overview')}
+        <TabsList className="w-full justify-between overflow-x-auto glass border-[#25C9D0]/20 p-1.5 gap-1 shadow-lg bg-white/80">
+          <TabsTrigger value="overview" className="gap-2 flex-1 min-w-0">
+            <Users className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.overview')}</span>
           </TabsTrigger>
-          <TabsTrigger value="progress" className="gap-2">
-            <TrendingUp className="h-4 w-4" />
-            {t('results.tabs.progress')}
+          <TabsTrigger value="progress" className="gap-2 flex-1 min-w-0">
+            <TrendingUp className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.progress')}</span>
             {personalProgress.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
+              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                activeTab === 'progress' 
+                  ? 'bg-white/30 text-white border border-white/50' 
+                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+              }`}>
                 {personalProgress.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="tasks" className="gap-2">
-            <ListTodo className="h-4 w-4" />
-            {t('results.tabs.tasks')}
+          <TabsTrigger value="tasks" className="gap-2 flex-1 min-w-0">
+            <ListTodo className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.tasks')}</span>
             {actionItems.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
+              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                activeTab === 'tasks' 
+                  ? 'bg-white/30 text-white border border-white/50' 
+                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+              }`}>
                 {actionItems.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="decisions" className="gap-2">
-            <Target className="h-4 w-4" />
-            {t('results.tabs.decisions')}
+          <TabsTrigger value="decisions" className="gap-2 flex-1 min-w-0">
+            <Target className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.decisions')}</span>
             {keyDecisions.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
+              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                activeTab === 'decisions' 
+                  ? 'bg-white/30 text-white border border-white/50' 
+                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+              }`}>
                 {keyDecisions.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="summary" className="gap-2">
-            <Award className="h-4 w-4" />
-            {t('results.tabs.summary')}
+          <TabsTrigger value="summary" className="gap-2 flex-1 min-w-0">
+            <Award className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.summary')}</span>
           </TabsTrigger>
-          <TabsTrigger value="transcript" className="gap-2">
-            <FileText className="h-4 w-4" />
-            {t('results.tabs.transcript')}
+          <TabsTrigger value="transcript" className="gap-2 flex-1 min-w-0">
+            <FileText className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.transcript')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -500,9 +513,9 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </Card>
         </TabsContent>
 
-        {/* Tasks Tab - Refined */}
+        {/* Tasks Tab - Clean & Simple Design */}
         <TabsContent value="tasks" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
+          <Card className="glass border-[#25C9D0]/20 shadow-xl bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <SectionHeader
                 icon={ListTodo}
@@ -527,53 +540,46 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                   <p className="text-slate-500 italic text-sm">{t('results.sections.actionItems.noItems')}</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {actionItems.map((item, index) => (
                     <div 
                       key={index} 
-                      className="group p-5 bg-white rounded-[12px] border border-slate-200 hover:border-[#25C9D0]/30 hover:shadow-md transition-all duration-200"
+                      className="p-4 bg-white rounded-[12px] border-l-4 border-[#25C9D0] hover:border-[#14B8A6] hover:shadow-md transition-all duration-200"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
-                          <div className="w-6 h-6 rounded-md border-2 border-slate-300 group-hover:border-[#25C9D0] flex items-center justify-center transition-colors bg-white">
-                            <div className="w-2.5 h-2.5 rounded-sm bg-slate-200 group-hover:bg-[#25C9D0] transition-colors"></div>
-                          </div>
+                      {/* Task Title */}
+                      <p className="font-semibold text-slate-900 text-sm mb-3 leading-relaxed">
+                        {item.task}
+                      </p>
+
+                      {/* Metadata Row */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-[#25C9D0]/10 text-[#25C9D0] border border-[#25C9D0]/20">
+                          <User className="h-3 w-3" />
+                          {item.assignee || t('results.sections.actionItems.unassigned')}
                         </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-slate-900 text-base mb-3 leading-relaxed">
-                            {item.task}
-                          </p>
-
-                          <div className="flex flex-wrap items-center gap-2">
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold bg-[#25C9D0]/10 text-[#25C9D0] border border-[#25C9D0]/20">
-                              <User className="h-3.5 w-3.5" />
-                              {item.assignee || t('results.sections.actionItems.unassigned')}
-                            </div>
-                            {item.dueDate && (
-                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                                <Clock className="h-3.5 w-3.5" />
-                                {item.dueDate}
-                              </div>
-                            )}
-                            {item.priority && (
-                              <div className={`inline-flex items-center px-3 py-1.5 rounded-[8px] text-xs font-semibold border ${getPriorityColor(item.priority)}`}>
-                                {item.priority}
-                              </div>
-                            )}
+                        {item.dueDate && (
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                            <Clock className="h-3 w-3" />
+                            {item.dueDate}
                           </div>
-
-                          {item.technicalNotes && (
-                            <div className="mt-3 p-3 bg-slate-50 rounded-[10px] border border-slate-200">
-                              <p className="text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                                <Zap className="h-3.5 w-3.5 text-[#25C9D0]" />
-                                {t('results.sections.actionItems.technicalNotes')}
-                              </p>
-                              <p className="text-sm text-slate-600 leading-relaxed">{item.technicalNotes}</p>
-                            </div>
-                          )}
-                        </div>
+                        )}
+                        {item.priority && (
+                          <div className={`inline-flex items-center px-2.5 py-1 rounded-[6px] text-xs font-semibold border ${getPriorityColor(item.priority)}`}>
+                            {item.priority}
+                          </div>
+                        )}
                       </div>
+
+                      {/* Technical Notes */}
+                      {item.technicalNotes && (
+                        <div className="mt-3 pt-3 border-t border-slate-100">
+                          <p className="text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                            <Zap className="h-3 w-3 text-[#25C9D0]" />
+                            {t('results.sections.actionItems.technicalNotes')}
+                          </p>
+                          <p className="text-sm text-slate-600 leading-relaxed">{item.technicalNotes}</p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -582,9 +588,9 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </Card>
         </TabsContent>
 
-        {/* Decisions Tab - Refined */}
+        {/* Decisions Tab - Creative & Modern Design */}
         <TabsContent value="decisions" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#14B8A6]/5">
+          <Card className="glass border-[#14B8A6]/20 shadow-xl bg-gradient-to-br from-white via-[#14B8A6]/5 to-white overflow-hidden">
             <CardHeader>
               <SectionHeader
                 icon={Target}
@@ -595,45 +601,86 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             </CardHeader>
             <CardContent>
               {keyDecisions.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#14B8A6]/10 flex items-center justify-center">
-                    <Target className="h-8 w-8 text-[#14B8A6]" />
+                <div className="text-center py-16">
+                  <div className="relative w-20 h-20 mx-auto mb-6">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#14B8A6]/20 to-[#25C9D0]/20 rounded-full blur-xl animate-pulse"></div>
+                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-[#14B8A6]/10 to-[#25C9D0]/10 flex items-center justify-center border-2 border-[#14B8A6]/20">
+                      <Target className="h-10 w-10 text-[#14B8A6]" />
+                    </div>
                   </div>
                   <p className="text-slate-500 italic text-sm">{t('results.sections.decisions.noDecisions')}</p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {keyDecisions.map((decision, index) => (
-                    <div
-                      key={index}
-                      className="group relative p-5 bg-white rounded-[12px] border-l-4 border-[#14B8A6] shadow-sm hover:shadow-md transition-all duration-200"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                          <div className="w-8 h-8 bg-gradient-to-br from-[#14B8A6] to-[#0F9488] rounded-[8px] flex items-center justify-center shadow-sm">
-                            <Target className="h-4 w-4 text-white" strokeWidth={2.5} />
+                <div className="relative">
+                  {/* Decorative timeline line */}
+                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#14B8A6]/30 via-[#25C9D0]/30 to-[#14B8A6]/30 hidden md:block"></div>
+                  
+                  <div className="space-y-4">
+                    {keyDecisions.map((decision, index) => (
+                      <div
+                        key={index}
+                        className="group relative flex items-start gap-4 md:gap-6"
+                      >
+                        {/* Timeline dot */}
+                        <div className="relative z-10 flex-shrink-0 mt-1">
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-[#14B8A6] rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                            <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#14B8A6] to-[#0F9488] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-2 border-white">
+                              <CheckSquare className="h-5 w-5 md:h-6 md:w-6 text-white" strokeWidth={2.5} />
+                            </div>
+                          </div>
+                          {/* Decision number badge */}
+                          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-md">
+                            {index + 1}
                           </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-slate-800 font-medium leading-relaxed text-sm">
-                            {decision}
-                          </p>
+
+                        {/* Decision content card */}
+                        <div className="flex-1 min-w-0">
+                          <div className="group/card relative p-5 md:p-6 bg-white rounded-[16px] border-2 border-[#14B8A6]/20 shadow-md hover:shadow-xl transition-all duration-300 hover:border-[#14B8A6]/40 hover:-translate-y-1 overflow-hidden">
+                            {/* Gradient overlay on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#14B8A6]/0 to-[#25C9D0]/0 group-hover/card:from-[#14B8A6]/5 group-hover/card:to-[#25C9D0]/5 transition-all duration-300"></div>
+                            
+                            {/* Decorative corner accent */}
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#14B8A6]/10 to-transparent rounded-bl-[100px]"></div>
+                            
+                            <div className="relative z-10">
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Flag className="h-4 w-4 text-[#14B8A6]" />
+                                    <span className="text-xs font-bold text-[#14B8A6] uppercase tracking-wide">
+                                      {t('results.sections.decisions.title')} #{index + 1}
+                                    </span>
+                                  </div>
+                                  <p className="text-slate-800 font-semibold leading-relaxed text-base md:text-lg group-hover/card:text-slate-900 transition-colors">
+                                    {decision}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* Status indicator */}
+                              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100">
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#14B8A6]/10 border border-[#14B8A6]/20">
+                                  <CheckCircleIcon className="h-3.5 w-3.5 text-[#14B8A6]" />
+                                  <span className="text-xs font-semibold text-[#0F9488]">Confirmed</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <span className="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#14B8A6]/10 text-[#0F9488] border border-[#14B8A6]/20">
-                          #{index + 1}
-                        </span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Summary Tab - Refined */}
+        {/* Summary Tab - Clean & Simple Design */}
         <TabsContent value="summary" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
+          <Card className="glass border-[#25C9D0]/20 shadow-xl bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <SectionHeader
                 icon={Award}
@@ -646,88 +693,118 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               />
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {/* Blockers */}
+              <div className="space-y-8">
+                {/* Blockers Section */}
                 <div>
-                  <h4 className="font-semibold text-slate-700 mb-2.5 flex items-center gap-2 text-sm">
-                    <div className="w-5 h-5 rounded-md bg-[#25C9D0]/10 flex items-center justify-center">
-                      <AlertCircle className="h-3.5 w-3.5 text-[#25C9D0]" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#25C9D0]/10 flex items-center justify-center">
+                      <AlertCircle className="h-5 w-5 text-[#25C9D0]" />
                     </div>
-                    {t('results.sections.summary.blockersToFollowUp')}
-                  </h4>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {t('results.sections.summary.blockersToFollowUp')}
+                      </h4>
+                    </div>
+                  </div>
                   {summary.blockersToFollowUp.length > 0 ? (
-                    <ul className="space-y-1.5 pl-7">
+                    <div className="space-y-2 pl-13">
                       {summary.blockersToFollowUp.map((blocker, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
-                          <span className="text-[#25C9D0] font-bold mt-1">•</span>
-                          <span>{blocker}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-slate-400 italic text-sm pl-7">{t('results.sections.summary.noBlockers')}</p>
-                  )}
-                </div>
-
-                {/* Priority Tasks */}
-                <div>
-                  <h4 className="font-semibold text-slate-900 text-base mb-3 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-[8px] bg-[#25C9D0]/10 flex items-center justify-center">
-                      <Target className="h-4 w-4 text-[#25C9D0]" />
-                    </div>
-                    {t('results.sections.summary.priorityTasks')}
-                  </h4>
-                  {summary.priorityTasks.length > 0 ? (
-                    <ul className="space-y-2">
-                      {summary.priorityTasks.map((task, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 p-3 bg-[#25C9D0]/5 rounded-[10px] border border-[#25C9D0]/20 hover:border-[#25C9D0]/30 transition-colors">
-                          <ArrowRight className="h-4 w-4 text-[#25C9D0] mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700 font-medium text-sm">{task}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-slate-400 italic text-sm pl-9">{t('results.sections.summary.noPriorityTasks')}</p>
-                  )}
-                </div>
-
-                {/* Responsibilities */}
-                <div>
-                  <h4 className="font-semibold text-slate-900 text-base mb-3 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-[8px] bg-[#14B8A6]/10 flex items-center justify-center">
-                      <Users className="h-4 w-4 text-[#14B8A6]" />
-                    </div>
-                    {t('results.sections.summary.responsibilities')}
-                  </h4>
-                  {summary.responsibilities.length > 0 ? (
-                    <div className="space-y-3">
-                      {summary.responsibilities.map((resp, idx) => (
-                        <div 
-                          key={idx} 
-                          className="p-4 bg-white rounded-[12px] border border-slate-200 hover:border-[#14B8A6]/30 hover:shadow-sm transition-all"
+                        <div
+                          key={idx}
+                          className="flex items-start gap-3 p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <p className="font-semibold text-slate-900 mb-2 text-sm">{resp.task}</p>
-                              <div className="flex items-center gap-2">
-                                <User className="h-3.5 w-3.5 text-[#14B8A6]" />
-                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#14B8A6]/10 text-[#0F9488] border border-[#14B8A6]/20">
-                                  {resp.person}
-                                </span>
-                              </div>
-                            </div>
+                          <span className="text-[#25C9D0] font-bold mt-0.5 flex-shrink-0">•</span>
+                          <p className="text-slate-800 text-sm leading-relaxed flex-1">
+                            {blocker}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 italic text-sm pl-13">{t('results.sections.summary.noBlockers')}</p>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-slate-200"></div>
+
+                {/* Priority Tasks Section */}
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#25C9D0]/10 flex items-center justify-center">
+                      <Target className="h-5 w-5 text-[#25C9D0]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {t('results.sections.summary.priorityTasks')}
+                      </h4>
+                    </div>
+                  </div>
+                  {summary.priorityTasks.length > 0 ? (
+                    <div className="space-y-2 pl-13">
+                      {summary.priorityTasks.map((task, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-start gap-3 p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
+                        >
+                          <span className="text-[#25C9D0] font-bold mt-0.5 flex-shrink-0">#{idx + 1}</span>
+                          <p className="text-slate-800 text-sm leading-relaxed flex-1 font-medium">
+                            {task}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 italic text-sm pl-13">{t('results.sections.summary.noPriorityTasks')}</p>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-slate-200"></div>
+
+                {/* Responsibilities Section */}
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#14B8A6]/10 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-[#14B8A6]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {t('results.sections.summary.responsibilities')}
+                      </h4>
+                    </div>
+                  </div>
+                  {summary.responsibilities.length > 0 ? (
+                    <div className="space-y-3 pl-13">
+                      {summary.responsibilities.map((resp, idx) => (
+                        <div
+                          key={idx}
+                          className="p-4 bg-white rounded-[12px] border border-slate-200 hover:border-[#14B8A6]/30 hover:shadow-md transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <p className="font-semibold text-slate-900 text-sm leading-relaxed flex-1">
+                              {resp.task}
+                            </p>
                             {resp.deadline && (
-                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
-                                <Clock className="h-3.5 w-3.5" />
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap flex-shrink-0">
+                                <Clock className="h-3 w-3" />
                                 {resp.deadline}
                               </div>
                             )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#14B8A6] to-[#25C9D0] flex items-center justify-center text-white text-xs font-bold">
+                              {resp.person.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-sm text-slate-700 font-medium">
+                              {resp.person}
+                            </span>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-slate-400 italic text-sm pl-9">{t('results.sections.summary.noResponsibilities')}</p>
+                    <p className="text-slate-400 italic text-sm pl-13">{t('results.sections.summary.noResponsibilities')}</p>
                   )}
                 </div>
               </div>
