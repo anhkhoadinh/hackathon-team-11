@@ -221,7 +221,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                   <span className="text-slate-300">•</span>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 ${
                     source === 'extension'
-                      ? 'bg-purple-100 text-purple-700 border-purple-200'
+                      ? 'bg-[#14B8A6]/10 text-[#0F9488] border-[#14B8A6]/20'
                       : 'bg-[#25C9D0]/10 text-[#25C9D0] border-[#25C9D0]/20'
                   }`}>
                     {source === 'extension' ? t('meetingDetail.source.extension') : t('meetingDetail.source.upload')}
