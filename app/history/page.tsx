@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { Calendar, Clock, Users, FileText, Filter, Download, Search, ChevronDown, Sparkles, History } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -26,7 +26,7 @@ interface Meeting {
 
 const PAGE_SIZE = 10; // Default limit per page
 
-export default function HistoryPage() {
+function HistoryPageContent() {
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -389,5 +389,17 @@ export default function HistoryPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function HistoryPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25C9D0]"></div>
+      </div>
+    }>
+      <HistoryPageContent />
+    </Suspense>
   );
 }
