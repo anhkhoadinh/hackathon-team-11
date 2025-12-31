@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, Clock, Users, FileText, Filter, Download, Search, ChevronDown, Sparkles, History } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MeetingCard from '@/components/MeetingCard';
 import Header from '@/components/Header';
+import Pagination from '@/components/Pagination';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Meeting {
@@ -22,32 +24,61 @@ interface Meeting {
   createdAt: string;
 }
 
+const PAGE_SIZE = 10; // Default limit per page
+
 export default function HistoryPage() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [totalCount, setTotalCount] = useState(0);
   
-  // Filters
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [sourceFilter, setSourceFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('meetingDate');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [searchQuery, setSearchQuery] = useState('');
+  // Get state from URL params or use defaults
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const startDate = searchParams.get('startDate') || '';
+  const endDate = searchParams.get('endDate') || '';
+  const sourceFilter = searchParams.get('source') || 'all';
+  const sortBy = searchParams.get('sortBy') || 'meetingDate';
+  const sortOrder = searchParams.get('sortOrder') || 'desc';
+  const searchQuery = searchParams.get('search') || '';
 
-  useEffect(() => {
-    fetchMeetings();
-  }, [startDate, endDate, sourceFilter, sortBy, sortOrder]);
+  // Calculate offset from current page
+  const offset = (currentPage - 1) * PAGE_SIZE;
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  const fetchMeetings = async () => {
+  // Update URL params helper
+  const updateURLParams = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '' || value === 'all') {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    
+    router.push(`/history?${params.toString()}`, { scroll: false });
+  }, [searchParams, router]);
+
+  // Fetch meetings with pagination
+  const fetchMeetings = useCallback(async () => {
     setLoading(true);
     setError('');
+    
+    const currentOffset = (currentPage - 1) * PAGE_SIZE;
     
     try {
       const params = new URLSearchParams({
         sortBy,
         sortOrder,
+        limit: PAGE_SIZE.toString(),
+        offset: currentOffset.toString(),
         ...(startDate && { startDate }),
         ...(endDate && { endDate }),
         ...(sourceFilter !== 'all' && { source: sourceFilter }),
@@ -60,15 +91,63 @@ export default function HistoryPage() {
       }
 
       const data = await response.json();
-      setMeetings(data.meetings);
+      setMeetings(data.meetings || []);
+      setTotalCount(data.pagination?.total || 0);
     } catch (err: any) {
       setError(err.message);
       console.error('Error fetching meetings:', err);
     } finally {
       setLoading(false);
     }
+  }, [startDate, endDate, sourceFilter, sortBy, sortOrder, currentPage]);
+
+  useEffect(() => {
+    fetchMeetings();
+  }, [fetchMeetings]);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    updateURLParams({ page: page.toString() });
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handle filter changes - reset to page 1
+  const handleStartDateChange = (value: string) => {
+    updateURLParams({ startDate: value, page: '1' });
+  };
+
+  const handleEndDateChange = (value: string) => {
+    updateURLParams({ endDate: value, page: '1' });
+  };
+
+  const handleSourceFilterChange = (value: string) => {
+    updateURLParams({ source: value === 'all' ? null : value, page: '1' });
+  };
+
+  const handleSortByChange = (value: string) => {
+    updateURLParams({ sortBy: value, page: '1' });
+  };
+
+  const handleSortOrderChange = () => {
+    updateURLParams({ sortOrder: sortOrder === 'asc' ? 'desc' : 'asc', page: '1' });
+  };
+
+  const handleSearchChange = (value: string) => {
+    updateURLParams({ search: value || null, page: '1' });
+  };
+
+  const handleClearFilters = () => {
+    updateURLParams({
+      startDate: null,
+      endDate: null,
+      source: null,
+      search: null,
+      page: '1',
+    });
+  };
+
+  // Apply client-side search filter (after pagination)
   const filteredMeetings = meetings.filter(meeting => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
@@ -93,6 +172,13 @@ export default function HistoryPage() {
     
     return false;
   });
+
+  // Calculate display count (accounting for search filter)
+  const displayCount = searchQuery ? filteredMeetings.length : totalCount;
+  const showingStart = totalCount > 0 && !searchQuery ? (currentPage - 1) * PAGE_SIZE + 1 : 0;
+  const showingEnd = searchQuery 
+    ? filteredMeetings.length 
+    : Math.min(currentPage * PAGE_SIZE, totalCount);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -150,7 +236,7 @@ export default function HistoryPage() {
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     placeholder={t('history.filters.searchPlaceholder')}
                     className="w-full pl-10 pr-4 py-2.5 border-2 border-slate-200 rounded-[10px] focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
                   />
@@ -165,7 +251,7 @@ export default function HistoryPage() {
                 <input
                   type="date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => handleStartDateChange(e.target.value)}
                   className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-[10px] focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
                 />
               </div>
@@ -178,7 +264,7 @@ export default function HistoryPage() {
                 <input
                   type="date"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={(e) => handleEndDateChange(e.target.value)}
                   className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-[10px] focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
                 />
               </div>
@@ -190,7 +276,7 @@ export default function HistoryPage() {
                 </label>
                 <select
                   value={sourceFilter}
-                  onChange={(e) => setSourceFilter(e.target.value)}
+                  onChange={(e) => handleSourceFilterChange(e.target.value)}
                   className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-[10px] focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
                 >
                   <option value="all">{t('history.filters.allSources')}</option>
@@ -205,7 +291,7 @@ export default function HistoryPage() {
               <span className="text-sm font-semibold text-slate-700">{t('history.filters.sortBy')}</span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => handleSortByChange(e.target.value)}
                 className="px-4 py-2 border-2 border-slate-200 rounded-[10px] text-sm focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
               >
                 <option value="meetingDate">{t('history.filters.meetingDate')}</option>
@@ -215,7 +301,7 @@ export default function HistoryPage() {
               </select>
               
               <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                onClick={handleSortOrderChange}
                 className="px-4 py-2 border-2 border-slate-200 rounded-[10px] text-sm font-medium hover:bg-[#25C9D0]/10 hover:border-[#25C9D0]/50 transition-all"
               >
                 {sortOrder === 'asc' ? t('common.ascending') : t('common.descending')}
@@ -223,12 +309,7 @@ export default function HistoryPage() {
 
               {(startDate || endDate || sourceFilter !== 'all' || searchQuery) && (
                 <button
-                  onClick={() => {
-                    setStartDate('');
-                    setEndDate('');
-                    setSourceFilter('all');
-                    setSearchQuery('');
-                  }}
+                  onClick={handleClearFilters}
                   className="ml-auto text-sm font-semibold text-[#25C9D0] hover:text-[#1BA1A8] transition-colors"
                 >
                   {t('history.filters.clearFilters')}
@@ -275,7 +356,15 @@ export default function HistoryPage() {
             <div className="space-y-6 fade-in-up">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-slate-600">
-                  {t('history.showing', { count: filteredMeetings.length, plural: filteredMeetings.length !== 1 ? 's' : '' })}
+                  {searchQuery
+                    ? t('history.showing', { 
+                        count: filteredMeetings.length, 
+                        plural: filteredMeetings.length !== 1 ? 's' : '' 
+                      })
+                    : totalCount > 0
+                    ? `Showing ${showingStart}-${showingEnd} of ${totalCount} meeting${totalCount !== 1 ? 's' : ''}`
+                    : t('history.showing', { count: 0, plural: '' })
+                  }
                 </p>
               </div>
 
@@ -284,6 +373,17 @@ export default function HistoryPage() {
                   <MeetingCard key={meeting.id} meeting={meeting} />
                 ))}
               </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && !searchQuery && (
+                <div className="mt-8 pt-6 border-t-2 border-slate-200">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
