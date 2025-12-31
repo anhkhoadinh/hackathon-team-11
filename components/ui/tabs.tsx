@@ -30,7 +30,7 @@ const TabsList = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "inline-flex h-12 items-center justify-center rounded-[12px] bg-slate-50/80 backdrop-blur-sm p-1.5 text-slate-500 border border-slate-200/60 shadow-sm",
+      "inline-flex h-12 items-center justify-center rounded-[12px] bg-white/90 backdrop-blur-sm p-1.5 text-slate-500 border border-[#25C9D0]/20 shadow-lg",
       className
     )}
     {...props}
@@ -53,10 +53,10 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-[10px] px-4 py-2.5 text-sm font-semibold ring-offset-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25C9D0] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-[10px] px-4 py-2.5 text-sm font-semibold ring-offset-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25C9D0] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative",
           isActive
-            ? "bg-white text-[#25C9D0] shadow-md shadow-[#25C9D0]/10 border border-[#25C9D0]/20"
-            : "text-slate-600 hover:text-slate-900 hover:bg-white/60",
+            ? "bg-gradient-to-r from-[#25C9D0] to-[#14B8A6] text-white shadow-md shadow-[#25C9D0]/20 border border-[#25C9D0]/30"
+            : "text-slate-600 hover:text-[#25C9D0] hover:bg-[#25C9D0]/5",
           className
         )}
         onClick={() => context.onValueChange(value)}
