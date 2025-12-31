@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Calendar, Clock, Users, FileText, Zap } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Users, FileText, Zap, History } from 'lucide-react';
 import ResultDisplay from '@/components/ResultDisplay';
+import Header from '@/components/Header';
 import { MeetingResult } from '@/types';
 import { formatDuration } from '@/lib/utils';
 import { useTranslation } from '@/contexts/TranslationContext';
@@ -101,6 +102,12 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-[#25C9D0]/10 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#14B8A6]/10 to-transparent rounded-full blur-3xl"></div>
         </div>
+        <Header 
+          icon={<History className="h-7 w-7" strokeWidth={2.5} />}
+          title={t('history.title')}
+          subtitle={t('history.subtitle')}
+          showNewMeetingLink={true}
+        />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25C9D0] mx-auto"></div>
@@ -119,6 +126,12 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-[#25C9D0]/10 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#14B8A6]/10 to-transparent rounded-full blur-3xl"></div>
         </div>
+        <Header 
+          icon={<History className="h-7 w-7" strokeWidth={2.5} />}
+          title={t('history.title')}
+          subtitle={t('history.subtitle')}
+          showNewMeetingLink={true}
+        />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md glass border-[#25C9D0]/20 rounded-[16px] p-8 shadow-xl">
             <h1 className="text-2xl font-bold gradient-text mb-4">
@@ -151,6 +164,13 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-[#25C9D0]/10 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#14B8A6]/10 to-transparent rounded-full blur-3xl"></div>
       </div>
+
+      <Header 
+        icon={<History className="h-7 w-7" strokeWidth={2.5} />}
+        title={t('history.title')}
+        subtitle={t('history.subtitle')}
+        showNewMeetingLink={true}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
