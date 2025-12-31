@@ -1,37 +1,45 @@
-# Meeting AI Assistant
+# MeetingMind AI
 
 Transform your meeting recordings into actionable insights with AI-powered transcription and analysis.
 
-## Features
+## Overview
 
-- **Audio/Video Upload**: Support for MP3, WAV, M4A, MP4, WebM formats (up to 25MB)
-- **AI Transcription**: Powered by OpenAI Whisper with timestamp granularity
-- **Smart Analysis**: GPT-4 extracts:
+MeetingMind AI is an intelligent meeting assistant that automatically transcribes audio/video recordings and extracts key insights using advanced AI. It helps teams capture, analyze, and act on meeting content efficiently.
+
+**Who it's for:** Teams, project managers, and professionals who want to extract actionable information from meetings without manual note-taking.
+
+**Key value proposition:** Save time by automatically generating meeting summaries, action items, and decisions with professional PDF reports ready for sharing.
+
+## Key Features
+
+- **Upload & Analyze Meeting Recordings** - Support for MP3, WAV, M4A, MP4, WebM formats (up to 25MB)
+- **AI Transcription** - Powered by OpenAI Whisper with timestamp granularity
+- **AI Analysis** - GPT-4 extracts:
   - 5-7 key summary points
   - Action items with assignees (auto-detected from transcript)
   - Key decisions made
   - Participant list
-- **Professional PDF Reports**: Download formatted PDF with all meeting details
-- **Modern UI**: Clean, responsive interface with progress tracking
-- **Cost Effective**: ~$0.40 per 60-minute meeting
+- **PDF Report Generation** - Download professional formatted PDFs with all meeting details
+- **Meeting History** - Browse, search, and filter past meetings with full transcript access
+- **Chrome Extension** - Real-time audio capture and transcription for Google Meet
+- **Multi-language Support** - UI available in English, Vietnamese, and Japanese (transcript language is separate from UI language)
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **AI**: OpenAI Whisper & GPT-4
-- **PDF**: jsPDF with auto-table
-- **Icons**: Lucide React
+- **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes
+- **AI:** OpenAI Whisper (transcription), GPT-4 (analysis)
+- **Database:** PostgreSQL + Prisma ORM
+- **PDF Generation:** jsPDF with auto-table
+- **Deployment:** Vercel (recommended)
 
 ## Getting Started
-
-> **Team Members:** See **[SETUP_FOR_TEAM.md](./SETUP_FOR_TEAM.md)** for quick setup with custom ports!
 
 ### Prerequisites
 
 - Node.js 18+ installed
 - OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- PostgreSQL database (local or cloud)
 
 ### Installation
 
@@ -51,171 +59,52 @@ Transform your meeting recordings into actionable insights with AI-powered trans
 
    Create a `.env.local` file in the root directory:
 
-   ```bash
+   ```env
    OPENAI_API_KEY=your_openai_api_key_here
+   DATABASE_URL=postgresql://user:password@localhost:5432/meeting_ai
+   API_BASE_URL=http://localhost:3000/api
    ```
 
-4. **Run the development server:**
+4. **Setup database:**
+
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+
+   # Push schema to database
+   npx prisma db push
+   ```
+
+5. **Generate Chrome Extension config (if using extension):**
+
+   ```bash
+   npm run generate:extension-config
+   ```
+
+6. **Run the development server:**
 
    ```bash
    npm run dev
    ```
 
-5. **Open your browser:**
+7. **Open your browser:**
 
    Navigate to [http://localhost:3000](http://localhost:3000)
-
-## Usage
-
-1. **Upload Recording**: Drag and drop your audio/video file or click to browse
-2. **Wait for Processing**: The app will:
-   - Transcribe audio using Whisper AI
-   - Analyze content with GPT-4
-   - Generate insights
-3. **Review Results**: Browse through:
-   - Meeting Summary
-   - Action Items with assignees
-   - Key Decisions
-   - Full Transcript with timestamps
-4. **Download PDF**: Get a professional report for sharing
-
-## Cost Estimation
-
-| Duration | Whisper Cost | GPT-4 Cost | Total |
-|----------|--------------|------------|-------|
-| 15 min   | $0.09        | $0.02      | ~$0.11|
-| 30 min   | $0.18        | $0.02      | ~$0.20|
-| 60 min   | $0.36        | $0.04      | ~$0.40|
-
-**Free tier**: OpenAI provides $5 credit = ~12 meetings (60 min each)
-
-## Project Structure
-
-```
-meeting-ai/
-  app/
-    api/
-      transcribe/       # Whisper API integration
-      analyze/          # GPT-4 analysis
-      generate-pdf/     # PDF generation
-    page.tsx            # Main application page
-    layout.tsx
-  components/
-    FileUpload.tsx      # Drag & drop upload
-    ProcessingStatus.tsx # Progress indicator
-    ResultDisplay.tsx   # Results with tabs
-    ui/                 # Reusable UI components
-  lib/
-    openai.ts           # OpenAI client
-    pdf-generator.ts    # PDF generation logic
-    utils.ts            # Utility functions
-  types/
-    index.ts            # TypeScript interfaces
-```
-
-## API Routes
-
-### POST /api/transcribe
-
-Transcribes audio/video files using OpenAI Whisper.
-
-**Request**: FormData with `file`
-**Response**: Transcript with segments and timestamps
-
-### POST /api/analyze
-
-Analyzes transcript using GPT-4 to extract insights.
-
-**Request**: JSON with `transcript`
-**Response**: Summary, action items, decisions, participants
-
-### POST /api/generate-pdf
-
-Generates PDF report from meeting data.
-
-**Request**: JSON with full meeting result
-**Response**: PDF file download
 
 ## Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `OPENAI_API_KEY` | Your OpenAI API key | Yes |
+| `OPENAI_API_KEY` | Your OpenAI API key for Whisper and GPT-4 | Yes |
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `API_BASE_URL` | Base URL for API endpoints (used by Chrome extension) | Optional (defaults to localhost:3000) |
 
-## Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import project in [Vercel](https://vercel.com)
-3. Add `OPENAI_API_KEY` environment variable
-4. Deploy!
-
-```bash
-# Or use Vercel CLI
-npm install -g vercel
-vercel
-```
-
-## Roadmap
-
-### Phase 1: MVP (Current)
-
-- [x] File upload interface
-- [x] Whisper transcription
-- [x] GPT-4 analysis
-- [x] PDF generation
-- [x] Modern UI
-
-### Phase 2: Chrome Extension (Coming Soon)
-
-- [ ] Real-time audio capture from Google Meet
-- [ ] Live transcription during meetings
-- [ ] In-meeting overlay UI
-- [ ] Automatic recording start/stop
-
-### Phase 3: Advanced Features
-
-- [ ] User authentication
-- [ ] Meeting history & storage
-- [ ] Team collaboration
-- [ ] Integration with Slack, Notion, Jira
-- [ ] Multi-language support
-- [ ] Custom AI prompts
-
-## Troubleshooting
-
-### "Invalid OpenAI API key"
-
-- Verify your API key in `.env.local`
-- Ensure you have credits in your OpenAI account
-
-### "File too large"
-
-- Whisper API has a 25MB limit
-- Compress your audio file or split longer recordings
-
-### API timeout
-
-- Very long files may timeout (5 min limit)
-- Consider splitting files > 60 minutes
-
-## Contributing
-
-Contributions are welcome! Feel free to:
-
-- Report bugs
-- Suggest features
-- Submit pull requests
+**Note:** Never commit `.env.local` to version control. Add it to `.gitignore`.
 
 ## License
 
-MIT License - feel free to use this project for personal or commercial purposes.
-
-## Support
-
-For questions or issues, please open an issue on GitHub.
+Private project - All rights reserved.
 
 ---
 
-Built with love using Next.js, TypeScript, and OpenAI
+Built with Next.js, TypeScript, and OpenAI
