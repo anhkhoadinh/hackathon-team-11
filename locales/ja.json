@@ -1,0 +1,231 @@
+{
+  "common": {
+    "copy": "コピー",
+    "copied": "コピーしました！",
+    "download": "ダウンロード",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "retry": "再試行",
+    "tryAgain": "再試行",
+    "back": "戻る",
+    "close": "閉じる",
+    "search": "検索",
+    "clear": "クリア",
+    "filter": "フィルター",
+    "filters": "フィルター",
+    "sort": "並び替え",
+    "ascending": "昇順",
+    "descending": "降順",
+    "all": "すべて",
+    "none": "なし",
+    "no": "いいえ",
+    "yes": "はい",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "view": "表示",
+    "details": "詳細"
+  },
+  "header": {
+    "appName": "MeetingMind AI",
+    "tagline": "会議を即座に実行可能な洞察に変換",
+    "history": "履歴",
+    "newMeeting": "新しいMeetingMind"
+  },
+  "upload": {
+    "title": "会議録音をアップロード",
+    "subtitle": "ファイルをここにドラッグ＆ドロップするか、",
+    "browse": "参照",
+    "description": "AIで会議を構造化された洞察に変換",
+    "audioFiles": "音声ファイル",
+    "videoFiles": "動画ファイル",
+    "supportedFormats": "MP3、WAV、M4A、MP4、WebM • 最大25MB",
+    "transcriptLanguage": "転写言語：",
+    "startAnalysis": "AI分析を開始",
+    "fileSelected": "ファイル選択済み",
+    "estimatedDuration": "推定時間",
+    "estimatedCost": "推定コスト",
+    "aiAnalysis": "AI分析",
+    "removeFile": "ファイルを削除",
+    "fileSizeExceeded": "ファイルサイズが25MBの制限を超えています。現在のサイズ：{size}",
+    "invalidFileType": "無効なファイルタイプ。サポートされている形式：{formats}",
+    "features": {
+      "aiPowered": {
+        "title": "AI対応",
+        "description": "OpenAI Whisper + GPT-4"
+      },
+      "fastProcessing": {
+        "title": "高速処理",
+        "description": "数分で結果"
+      },
+      "affordable": {
+        "title": "手頃な価格",
+        "description": "60分あたり約$0.40"
+      }
+    }
+  },
+  "processing": {
+    "title": "会議を処理中...",
+    "complete": "完了！",
+    "failed": "処理に失敗しました",
+    "description": "AIが会議録音を分析しています",
+    "completeDescription": "会議分析の準備が整いました！",
+    "errorDescription": "処理中にエラーが発生しました",
+    "progress": "{total}件中{current}件",
+    "inProgress": "処理中",
+    "done": "✓ 完了",
+    "currently": "現在：{step}",
+    "analyzeMessage": "AIが会議内容を分析しています。数分かかる場合があります。お待ちください...",
+    "waitMessage": "ファイルサイズによっては数分かかる場合があります。このウィンドウを閉じないでください。",
+    "errorAt": "エラー発生箇所：{step}",
+    "errorMessage": "処理中に問題が発生しました。もう一度お試しいただくか、問題が続く場合はサポートにお問い合わせください。",
+    "successTitle": "分析完了！🎉",
+    "successMessage": "会議が正常に処理されました。下にスクロールして結果を確認してください。"
+  },
+  "results": {
+    "title": "会議分析完了",
+    "downloadPDF": "PDFをダウンロード",
+    "generating": "生成中...",
+    "processAnother": "別のファイルを処理",
+    "tabs": {
+      "overview": "概要",
+      "progress": "進捗",
+      "tasks": "タスク",
+      "decisions": "決定事項",
+      "summary": "まとめ",
+      "transcript": "転写"
+    },
+    "sections": {
+      "attendance": {
+        "title": "出席",
+        "present": "出席（{count}）",
+        "absent": "欠席（{count}）",
+        "noInfo": "情報なし"
+      },
+      "workload": {
+        "title": "ワークロード評価",
+        "overloaded": "過負荷",
+        "normal": "通常",
+        "free": "空きあり",
+        "noInfo": "ワークロード評価情報なし"
+      },
+      "personalProgress": {
+        "title": "個人進捗更新",
+        "yesterday": "昨日完了",
+        "today": "今日作業中",
+        "blockers": "ブロッカー/問題",
+        "noInfo": "進捗更新情報なし",
+        "noInfoItem": "情報なし"
+      },
+      "actionItems": {
+        "title": "新しい割り当てと転送",
+        "noItems": "新しい割り当てなし",
+        "unassigned": "未割り当て",
+        "technicalNotes": "技術要件："
+      },
+      "decisions": {
+        "title": "重要な決定事項",
+        "noDecisions": "重要な決定事項は記録されていません"
+      },
+      "summary": {
+        "title": "まとめと次のステップ",
+        "blockersToFollowUp": "フォローアップが必要なブロッカー",
+        "priorityTasks": "今日の優先タスク",
+        "responsibilities": "責任と期限",
+        "noBlockers": "フォローアップが必要なブロッカーなし",
+        "noPriorityTasks": "優先タスクは記録されていません",
+        "noResponsibilities": "責任は記録されていません"
+      },
+      "transcript": {
+        "title": "完全な転写",
+        "searchPlaceholder": "転写を検索...",
+        "foundMatches": "{count}件の一致するセグメントが見つかりました",
+        "noMatches": "一致するセグメントが見つかりませんでした。"
+      }
+    },
+    "priority": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    }
+  },
+  "history": {
+    "title": "会議履歴",
+    "subtitle": "記録されたすべての会議を表示および管理",
+    "filters": {
+      "title": "フィルター",
+      "search": "検索",
+      "searchPlaceholder": "タイトル、参加者、またはコンテンツで検索...",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "source": "ソース",
+      "allSources": "すべてのソース",
+      "fileUpload": "ファイルアップロード",
+      "extension": "拡張機能",
+      "sortBy": "並び替え：",
+      "meetingDate": "会議日",
+      "createdDate": "作成日",
+      "duration": "時間",
+      "title": "タイトル",
+      "clearFilters": "フィルターをクリア"
+    },
+    "empty": {
+      "title": "会議が見つかりません",
+      "message": "フィルターを調整してみてください",
+      "messageNoFilters": "録音をアップロードするか、Chrome拡張機能を使用して開始してください",
+      "cta": "最初の会議を処理"
+    },
+    "showing": "{count}件の会議を表示中",
+    "loading": "会議を読み込み中...",
+    "error": "会議の取得に失敗しました"
+  },
+  "meetingDetail": {
+    "backToHistory": "履歴に戻る",
+    "notFound": "会議が見つかりません",
+    "notFoundMessage": "この会議が見つかりませんでした。",
+    "loading": "会議を読み込み中...",
+    "source": {
+      "upload": "アップロード",
+      "extension": "拡張機能"
+    }
+  },
+  "resultsPage": {
+    "title": "会議結果",
+    "subtitle": "Chrome拡張機能で記録",
+    "noResults": "結果が見つかりません",
+    "noResultsMessage": "会議結果が見つかりませんでした。まずChrome拡張機能を使用して会議を記録してください。",
+    "goToHome": "ホームに移動",
+    "backToHome": "ホームに戻る",
+    "loading": "結果を読み込み中..."
+  },
+  "footer": {
+    "features": {
+      "aiPowered": {
+        "title": "AI対応",
+        "description": "正確な転写とインテリジェントな分析のためにOpenAI Whisper & GPT-4を使用"
+      },
+      "multiLanguage": {
+        "title": "多言語対応",
+        "description": "ベトナム語、英語、日本語をネイティブ言語処理でサポート"
+      },
+      "pdfReports": {
+        "title": "PDFレポート",
+        "description": "構造化された洞察とアクションアイテムを含むプロフェッショナルなPDFレポートを生成"
+      }
+    },
+    "costEffective": "コスト効率：60分の会議あたり約$0.40",
+    "tagline": "効率的な会議文書化とチームコラボレーションのために構築"
+  },
+  "errors": {
+    "processingError": "処理エラー",
+    "transcriptionFailed": "転写に失敗しました",
+    "analysisFailed": "分析に失敗しました",
+    "pdfGenerationFailed": "PDF生成に失敗しました",
+    "pdfDownloadFailed": "PDFを生成できませんでした。もう一度お試しください。",
+    "meetingNotFound": "会議が見つかりません",
+    "failedToFetch": "会議の取得に失敗しました"
+  }
+}
+

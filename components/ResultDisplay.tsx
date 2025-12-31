@@ -4,13 +4,15 @@ import { useState, useMemo } from 'react';
 import { 
   Download, Copy, CheckCircle, FileText, ListTodo, Target, Users, Search, X, 
   CheckCircle2, XCircle, Clock, AlertCircle, TrendingUp, Calendar, 
-  Sparkles, User, Award, Zap, ArrowRight, ExternalLink 
+  Sparkles, User, Award, Zap, ArrowRight, CheckCircle2 as CheckCircleIcon,
+  Star, Flag, Rocket, Lightbulb, Shield, CheckSquare
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { Button } from './ui/button';
 import { MeetingResult } from '@/types';
 import { formatTimestamp, formatDuration } from '@/lib/utils';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface ResultDisplayProps {
   result: MeetingResult;
@@ -19,6 +21,7 @@ interface ResultDisplayProps {
 }
 
 export default function ResultDisplay({ result, onDownloadPDF, onReset }: ResultDisplayProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const [copiedSection, setCopiedSection] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -54,7 +57,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
     const parts = text.split(new RegExp(`(${query})`, 'gi'));
     return parts.map((part, i) =>
       part.toLowerCase() === query.toLowerCase() ? (
-        <mark key={i} className="bg-[#25C9D0]/30 text-slate-900 px-1 rounded-md">
+        <mark key={i} className="bg-[#25C9D0]/20 text-slate-900 px-1.5 py-0.5 rounded-md font-medium">
           {part}
         </mark>
       ) : (
@@ -71,29 +74,44 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
   const keyDecisions = analysis.keyDecisions || [];
   const summary = analysis.summary || { blockersToFollowUp: [], priorityTasks: [], responsibilities: [] };
 
-  // Get priority badge color
+  // Get priority badge color - using brand colors
   const getPriorityColor = (priority: string | null | undefined) => {
     if (!priority) return 'bg-slate-100 text-slate-700 border-slate-200';
     const p = priority.toLowerCase();
-    if (p.includes('high') || p.includes('cao')) return 'bg-red-100 text-red-700 border-red-200';
-    if (p.includes('medium') || p.includes('trung')) return 'bg-amber-100 text-amber-700 border-amber-200';
-    if (p.includes('low') || p.includes('thấp')) return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    // Check for English and Vietnamese terms
+    if (p.includes('high') || p.includes('cao') || p.includes('高')) return 'bg-[#25C9D0]/10 text-[#1BA1A8] border-[#25C9D0]/30';
+    if (p.includes('medium') || p.includes('trung') || p.includes('中')) return 'bg-[#14B8A6]/10 text-[#0F9488] border-[#14B8A6]/30';
+    if (p.includes('low') || p.includes('thấp') || p.includes('低')) return 'bg-slate-100 text-slate-600 border-slate-200';
     return 'bg-slate-100 text-slate-700 border-slate-200';
   };
 
-  // Get workload badge color
+  // Get workload badge color - using brand colors
   const getWorkloadColor = (status: string) => {
-    if (status === 'overloaded') return 'bg-red-100 text-red-700 border-red-300';
-    if (status === 'normal') return 'bg-blue-100 text-blue-700 border-blue-300';
-    if (status === 'free') return 'bg-emerald-100 text-emerald-700 border-emerald-300';
+    if (status === 'overloaded') return 'bg-[#25C9D0]/10 text-[#1BA1A8] border-[#25C9D0]/30';
+    if (status === 'normal') return 'bg-[#14B8A6]/10 text-[#0F9488] border-[#14B8A6]/30';
+    if (status === 'free') return 'bg-slate-100 text-slate-600 border-slate-200';
     return 'bg-slate-100 text-slate-700 border-slate-200';
   };
 
   const getWorkloadIcon = (status: string) => {
-    if (status === 'overloaded') return '🔥';
-    if (status === 'normal') return '✅';
-    if (status === 'free') return '🌟';
-    return '📊';
+    if (status === 'overloaded') return AlertCircle;
+    if (status === 'normal') return CheckCircle2;
+    if (status === 'free') return Sparkles;
+    return TrendingUp;
+  };
+
+  const getWorkloadIconBg = (status: string) => {
+    if (status === 'overloaded') return 'bg-[#25C9D0]/10';
+    if (status === 'normal') return 'bg-[#14B8A6]/10';
+    if (status === 'free') return 'bg-[#14B8A6]/10';
+    return 'bg-[#25C9D0]/10';
+  };
+
+  const getWorkloadIconColor = (status: string) => {
+    if (status === 'overloaded') return 'text-[#25C9D0]';
+    if (status === 'normal') return 'text-[#14B8A6]';
+    if (status === 'free') return 'text-[#14B8A6]';
+    return 'text-[#25C9D0]';
   };
 
   const CopyButton = ({ section, text }: { section: string; text: string }) => (
@@ -101,41 +119,67 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
       variant="ghost"
       size="sm"
       onClick={() => handleCopy(text, section)}
-      className="hover:bg-[#25C9D0]/10 hover:text-[#25C9D0] transition-all duration-300"
+      className="hover:bg-[#25C9D0]/10 hover:text-[#25C9D0] transition-all duration-200"
     >
       {copiedSection === section ? (
         <>
           <CheckCircle className="h-4 w-4 mr-2 text-[#25C9D0]" />
-          <span className="text-[#25C9D0] font-semibold">Copied!</span>
+          <span className="text-[#25C9D0] font-semibold">{t('common.copied')}</span>
         </>
       ) : (
         <>
           <Copy className="h-4 w-4 mr-2" />
-          Copy
+          {t('common.copy')}
         </>
       )}
     </Button>
   );
 
+  // Section Header Component - Consistent styling
+  const SectionHeader = ({ icon: Icon, title, badge, onCopy, copyText }: {
+    icon: any;
+    title: string;
+    badge?: React.ReactNode;
+    onCopy?: () => void;
+    copyText?: string;
+  }) => (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center shadow-sm">
+          <Icon className="h-5 w-5 text-white" />
+        </div>
+        <div>
+          <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            {title}
+            {badge}
+          </CardTitle>
+        </div>
+      </div>
+      {onCopy && copyText && (
+        <CopyButton section={title.toLowerCase()} text={copyText} />
+      )}
+    </div>
+  );
+
   return (
-    <div className="space-y-6 fade-in-up">
-      {/* Header Card */}
-      <Card className="glass border-[#25C9D0]/20 shadow-xl card-hover overflow-hidden">
+    <div className="space-y-6 fade-in-up max-w-7xl mx-auto">
+      {/* Header Card - Refined */}
+      <Card className="glass border-[#25C9D0]/20 shadow-xl overflow-hidden bg-gradient-to-br from-white to-[#25C9D0]/5">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#25C9D0] via-[#14B8A6] to-[#25C9D0] bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]"></div>
         <CardHeader>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-[12px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center shadow-lg shadow-[#25C9D0]/30">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <CardTitle className="text-3xl font-bold gradient-text">
-                    Meeting Analysis Complete
+                    {t('results.title')}
                   </CardTitle>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-[#25C9D0]" />
                   <span className="font-medium">{result.metadata.fileName}</span>
@@ -152,23 +196,23 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 </div>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button 
                 onClick={handleDownload}
                 disabled={isDownloading}
                 size="lg"
                 variant="primary"
-                className="shadow-xl hover:shadow-2xl"
+                className="shadow-lg hover:shadow-xl"
               >
                 {isDownloading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                    Generating...
+                    {t('results.generating')}
                   </>
                 ) : (
                   <>
                     <Download className="h-4 w-4 mr-2" />
-                    Download PDF
+                    {t('results.downloadPDF')}
                   </>
                 )}
               </Button>
@@ -176,100 +220,107 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 onClick={onReset} 
                 variant="outline" 
                 size="lg"
-                className="border-2 hover:border-[#25C9D0]/50"
+                className="border-2 border-slate-200 hover:border-[#25C9D0]/50 hover:bg-[#25C9D0]/5"
               >
-                Xử lý file khác
+                {t('results.processAnother')}
               </Button>
             </div>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Tabs Navigation */}
+      {/* Tabs Navigation - Enhanced */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-start overflow-x-auto glass border-[#25C9D0]/20 p-2 gap-2 shadow-lg">
-          <TabsTrigger value="overview" className="gap-2">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Tổng quan</span>
-            <span className="sm:hidden">Overview</span>
+        <TabsList className="w-full justify-between overflow-x-auto glass border-[#25C9D0]/20 p-1.5 gap-1 shadow-lg bg-white/80">
+          <TabsTrigger value="overview" className="gap-2 flex-1 min-w-0">
+            <Users className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.overview')}</span>
           </TabsTrigger>
-          <TabsTrigger value="progress" className="gap-2">
-            <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Tiến độ</span>
-            <span className="sm:hidden">Progress</span>
-            <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
-              {personalProgress.length}
-            </span>
+          <TabsTrigger value="progress" className="gap-2 flex-1 min-w-0">
+            <TrendingUp className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.progress')}</span>
+            {personalProgress.length > 0 && (
+              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                activeTab === 'progress' 
+                  ? 'bg-white/30 text-white border border-white/50' 
+                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+              }`}>
+                {personalProgress.length}
+              </span>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="tasks" className="gap-2">
-            <ListTodo className="h-4 w-4" />
-            <span className="hidden sm:inline">Công việc</span>
-            <span className="sm:hidden">Tasks</span>
-            <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
-              {actionItems.length}
-            </span>
+          <TabsTrigger value="tasks" className="gap-2 flex-1 min-w-0">
+            <ListTodo className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.tasks')}</span>
+            {actionItems.length > 0 && (
+              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                activeTab === 'tasks' 
+                  ? 'bg-white/30 text-white border border-white/50' 
+                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+              }`}>
+                {actionItems.length}
+              </span>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="decisions" className="gap-2">
-            <Target className="h-4 w-4" />
-            <span className="hidden sm:inline">Quyết định</span>
-            <span className="sm:hidden">Decisions</span>
+          <TabsTrigger value="decisions" className="gap-2 flex-1 min-w-0">
+            <Target className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.decisions')}</span>
             {keyDecisions.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
+              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                activeTab === 'decisions' 
+                  ? 'bg-white/30 text-white border border-white/50' 
+                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+              }`}>
                 {keyDecisions.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="summary" className="gap-2">
-            <Award className="h-4 w-4" />
-            <span className="hidden sm:inline">Tổng kết</span>
-            <span className="sm:hidden">Summary</span>
+          <TabsTrigger value="summary" className="gap-2 flex-1 min-w-0">
+            <Award className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.summary')}</span>
           </TabsTrigger>
-          <TabsTrigger value="transcript" className="gap-2">
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Transcript</span>
-            <span className="sm:hidden">Text</span>
+          <TabsTrigger value="transcript" className="gap-2 flex-1 min-w-0">
+            <FileText className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('results.tabs.transcript')}</span>
           </TabsTrigger>
         </TabsList>
 
-        {/* Overview Tab */}
+        {/* Overview Tab - Refined */}
         <TabsContent value="overview" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Attendance Card */}
-            <Card className="glass border-[#25C9D0]/20 shadow-lg card-hover">
+            <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center">
-                      <Users className="h-5 w-5 text-white" />
-                    </div>
-                    <CardTitle className="text-xl">Điểm danh</CardTitle>
-                  </div>
-                  <CopyButton
-                    section="attendance"
-                    text={`Có mặt: ${attendance.present.join(', ')}\nVắng: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`}
-                  />
-                </div>
+                <SectionHeader
+                  icon={Users}
+                  title={t('results.sections.attendance.title')}
+                  onCopy={() => handleCopy(
+                    `${t('results.sections.attendance.present', { count: attendance.present.length })}: ${attendance.present.join(', ')}\n${t('results.sections.attendance.absent', { count: attendance.absent.length })}: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`,
+                    'attendance'
+                  )}
+                  copyText={`${t('results.sections.attendance.present', { count: attendance.present.length })}: ${attendance.present.join(', ')}\n${t('results.sections.attendance.absent', { count: attendance.absent.length })}: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`}
+                />
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Present */}
                 <div>
-                  <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-[#25C9D0]" />
-                    Có mặt ({attendance.present.length})
+                  <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-[#14B8A6]" />
+                    {t('results.sections.attendance.present', { count: attendance.present.length })}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {attendance.present.length > 0 ? (
                       attendance.present.map((person, idx) => (
                         <div
                           key={idx}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-semibold bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 border-2 border-emerald-200 hover:border-emerald-300 transition-all duration-300 hover:shadow-md"
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[8px] text-sm font-medium bg-[#14B8A6]/10 text-[#0F9488] border border-[#14B8A6]/20 hover:bg-[#14B8A6]/15 transition-colors"
                         >
-                          <User className="h-4 w-4" />
+                          <User className="h-3.5 w-3.5" />
                           {person}
                         </div>
                       ))
                     ) : (
-                      <p className="text-slate-500 italic">Không có thông tin</p>
+                      <p className="text-slate-500 italic text-sm">{t('results.sections.attendance.noInfo')}</p>
                     )}
                   </div>
                 </div>
@@ -277,23 +328,23 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 {/* Absent */}
                 {attendance.absent.length > 0 && (
                   <div>
-                    <h4 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                      <XCircle className="h-5 w-5 text-red-500" />
-                      Vắng mặt ({attendance.absent.length})
+                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                      <XCircle className="h-5 w-5 text-slate-400" />
+                      {t('results.sections.attendance.absent', { count: attendance.absent.length })}
                     </h4>
                     <div className="space-y-2">
                       {attendance.absent.map((person, idx) => (
                         <div 
                           key={idx} 
-                          className="p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-[12px] border-2 border-red-200 hover:border-red-300 transition-all duration-300"
+                          className="p-3 bg-slate-50 rounded-[10px] border border-slate-200 hover:border-slate-300 transition-colors"
                         >
-                          <div className="flex items-start gap-3">
-                            <User className="h-5 w-5 text-red-600 mt-0.5" />
-                            <div>
-                              <span className="font-bold text-red-900 block">{person.name}</span>
+                          <div className="flex items-start gap-2">
+                            <User className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <span className="font-medium text-slate-700 block">{person.name}</span>
                               {person.reason && (
-                                <span className="text-sm text-red-700 mt-1 flex items-center gap-2">
-                                  <AlertCircle className="h-3.5 w-3.5" />
+                                <span className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+                                  <AlertCircle className="h-3 w-3" />
                                   {person.reason}
                                 </span>
                               )}
@@ -308,14 +359,12 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             </Card>
 
             {/* Workload Card */}
-            <Card className="glass border-[#25C9D0]/20 shadow-lg card-hover">
+            <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#14B8A6]/5">
               <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">Đánh giá Workload</CardTitle>
-                </div>
+                <SectionHeader
+                  icon={TrendingUp}
+                  title={t('results.sections.workload.title')}
+                />
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -323,21 +372,26 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                     workload.map((item, idx) => (
                       <div 
                         key={idx} 
-                        className="group flex items-center justify-between p-4 bg-white rounded-[12px] border-2 border-slate-200 hover:border-[#25C9D0]/50 transition-all duration-300 hover:shadow-md"
+                        className="group flex items-center justify-between p-4 bg-white rounded-[10px] border border-slate-200 hover:border-[#25C9D0]/30 hover:bg-[#25C9D0]/5 transition-all duration-200"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{getWorkloadIcon(item.status)}</span>
-                          <span className="font-bold text-slate-900">{item.member}</span>
+                          <div className={`w-8 h-8 rounded-[8px] ${getWorkloadIconBg(item.status)} flex items-center justify-center`}>
+                            {(() => {
+                              const IconComponent = getWorkloadIcon(item.status);
+                              return <IconComponent className={`h-4 w-4 ${getWorkloadIconColor(item.status)}`} />;
+                            })()}
+                          </div>
+                          <span className="font-semibold text-slate-900">{item.member}</span>
                         </div>
-                        <span className={`inline-flex items-center px-4 py-2 rounded-[10px] text-sm font-bold border-2 ${getWorkloadColor(item.status)}`}>
-                          {item.status === 'overloaded' && 'Quá tải'}
-                          {item.status === 'normal' && 'Bình thường'}
-                          {item.status === 'free' && 'Rảnh'}
+                        <span className={`inline-flex items-center px-3 py-1.5 rounded-[8px] text-xs font-semibold border ${getWorkloadColor(item.status)}`}>
+                          {item.status === 'overloaded' && t('results.sections.workload.overloaded')}
+                          {item.status === 'normal' && t('results.sections.workload.normal')}
+                          {item.status === 'free' && t('results.sections.workload.free')}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-slate-500 italic text-center py-8">Không có thông tin đánh giá workload</p>
+                    <p className="text-slate-500 italic text-center py-8 text-sm">{t('results.sections.workload.noInfo')}</p>
                   )}
                 </div>
               </CardContent>
@@ -345,105 +399,106 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </div>
         </TabsContent>
 
-        {/* Progress Tab */}
+        {/* Progress Tab - Refined */}
         <TabsContent value="progress" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg">
+          <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">Cập nhật tiến độ cá nhân</CardTitle>
-                </div>
-                <CopyButton
-                  section="progress"
-                  text={personalProgress.map(p => 
-                    `${p.member}:\n- Hôm qua: ${p.yesterday.join(', ')}\n- Hôm nay: ${p.today.join(', ')}\n- Blocker: ${p.blockers.length > 0 ? p.blockers.join(', ') : 'Không có'}`
-                  ).join('\n\n')}
-                />
-              </div>
+              <SectionHeader
+                icon={TrendingUp}
+                title={t('results.sections.personalProgress.title')}
+                onCopy={() => handleCopy(
+                  personalProgress.map(p => 
+                    `${p.member}:\n- ${t('results.sections.personalProgress.yesterday')}: ${p.yesterday.join(', ')}\n- ${t('results.sections.personalProgress.today')}: ${p.today.join(', ')}\n- ${t('results.sections.personalProgress.blockers')}: ${p.blockers.length > 0 ? p.blockers.join(', ') : t('results.sections.personalProgress.noInfoItem')}`
+                  ).join('\n\n'),
+                  'progress'
+                )}
+                copyText={personalProgress.map(p => 
+                  `${p.member}:\n- ${t('results.sections.personalProgress.yesterday')}: ${p.yesterday.join(', ')}\n- ${t('results.sections.personalProgress.today')}: ${p.today.join(', ')}\n- ${t('results.sections.personalProgress.blockers')}: ${p.blockers.length > 0 ? p.blockers.join(', ') : t('results.sections.personalProgress.noInfoItem')}`
+                ).join('\n\n')}
+              />
             </CardHeader>
             <CardContent>
               {personalProgress.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-                    <TrendingUp className="h-10 w-10 text-slate-400" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#25C9D0]/10 flex items-center justify-center">
+                    <TrendingUp className="h-8 w-8 text-[#25C9D0]" />
                   </div>
-                  <p className="text-slate-500 italic">Không có thông tin cập nhật tiến độ</p>
+                  <p className="text-slate-500 italic text-sm">{t('results.sections.personalProgress.noInfo')}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {personalProgress.map((progress, idx) => (
                     <div 
                       key={idx} 
-                      className="group p-6 bg-gradient-to-br from-white to-slate-50 rounded-[16px] border-2 border-slate-200 hover:border-[#25C9D0]/50 hover:shadow-xl transition-all duration-300"
+                      className="group p-6 bg-white rounded-[12px] border border-slate-200 hover:border-[#25C9D0]/30 hover:shadow-md transition-all duration-200"
                     >
                       {/* Member Header */}
-                      <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-slate-200">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                      <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-200">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-bold text-base shadow-sm">
                           {progress.member.charAt(0).toUpperCase()}
                         </div>
-                        <h3 className="font-bold text-xl text-slate-900">{progress.member}</h3>
+                        <h3 className="font-bold text-lg text-slate-900">{progress.member}</h3>
                       </div>
                       
-                      <div className="space-y-5">
+                      <div className="space-y-4">
                         {/* Yesterday */}
                         <div>
-                          <h4 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-emerald-100 flex items-center justify-center">
-                              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          <h4 className="font-semibold text-slate-700 mb-2.5 flex items-center gap-2 text-sm">
+                            <div className="w-5 h-5 rounded-md bg-[#14B8A6]/10 flex items-center justify-center">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-[#14B8A6]" />
                             </div>
-                            Hôm qua đã làm
+                            {t('results.sections.personalProgress.yesterday')}
                           </h4>
                           {progress.yesterday.length > 0 ? (
-                            <ul className="space-y-2">
+                            <ul className="space-y-1.5 pl-7">
                               {progress.yesterday.map((task, i) => (
-                                <li key={i} className="flex items-start gap-2 text-slate-600 pl-8">
+                                <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
                                   <span className="text-[#25C9D0] font-bold mt-1">•</span>
                                   <span>{task}</span>
                                 </li>
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-slate-500 italic pl-8">Không có thông tin</p>
+                            <p className="text-slate-400 italic text-sm pl-7">{t('results.sections.personalProgress.noInfoItem')}</p>
                           )}
                         </div>
 
                         {/* Today */}
                         <div>
-                          <h4 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center">
-                              <Calendar className="h-4 w-4 text-blue-600" />
+                          <h4 className="font-semibold text-slate-700 mb-2.5 flex items-center gap-2 text-sm">
+                            <div className="w-5 h-5 rounded-md bg-[#25C9D0]/10 flex items-center justify-center">
+                              <Calendar className="h-3.5 w-3.5 text-[#25C9D0]" />
                             </div>
-                            Hôm nay làm
+                            {t('results.sections.personalProgress.today')}
                           </h4>
                           {progress.today.length > 0 ? (
-                            <ul className="space-y-2">
+                            <ul className="space-y-1.5 pl-7">
                               {progress.today.map((task, i) => (
-                                <li key={i} className="flex items-start gap-2 text-slate-600 pl-8">
+                                <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
                                   <span className="text-[#25C9D0] font-bold mt-1">•</span>
                                   <span>{task}</span>
                                 </li>
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-slate-500 italic pl-8">Không có thông tin</p>
+                            <p className="text-slate-400 italic text-sm pl-7">{t('results.sections.personalProgress.noInfoItem')}</p>
                           )}
                         </div>
 
                         {/* Blockers */}
                         {progress.blockers.length > 0 && (
-                          <div className="p-4 bg-amber-50 rounded-[12px] border-2 border-amber-200">
-                            <h4 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
-                              <AlertCircle className="h-5 w-5" />
-                              Vướng mắc/Blocker
+                          <div>
+                            <h4 className="font-semibold text-slate-700 mb-2.5 flex items-center gap-2 text-sm">
+                              <div className="w-5 h-5 rounded-md bg-[#25C9D0]/10 flex items-center justify-center">
+                                <AlertCircle className="h-3.5 w-3.5 text-[#25C9D0]" />
+                              </div>
+                              {t('results.sections.personalProgress.blockers')}
                             </h4>
-                            <ul className="space-y-2">
+                            <ul className="space-y-1.5 pl-7">
                               {progress.blockers.map((blocker, i) => (
-                                <li key={i} className="flex items-start gap-2 text-amber-800">
-                                  <span className="text-amber-600 font-bold mt-1">⚠</span>
-                                  <span className="font-medium">{blocker}</span>
+                                <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
+                                  <span className="text-[#25C9D0] font-bold mt-1">•</span>
+                                  <span>{blocker}</span>
                                 </li>
                               ))}
                             </ul>
@@ -458,81 +513,73 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </Card>
         </TabsContent>
 
-        {/* Tasks Tab */}
+        {/* Tasks Tab - Clean & Simple Design */}
         <TabsContent value="tasks" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg">
+          <Card className="glass border-[#25C9D0]/20 shadow-xl bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                    <ListTodo className="h-5 w-5 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">Giao việc mới & Điều chuyển</CardTitle>
-                </div>
-                <CopyButton
-                  section="tasks"
-                  text={actionItems.map(item => 
+              <SectionHeader
+                icon={ListTodo}
+                title={t('results.sections.actionItems.title')}
+                onCopy={() => handleCopy(
+                  actionItems.map(item => 
                     `${item.task} - ${item.assignee}${item.dueDate ? ` (${item.dueDate})` : ''}${item.priority ? ` [${item.priority}]` : ''}`
-                  ).join('\n')}
-                />
-              </div>
+                  ).join('\n'),
+                  'tasks'
+                )}
+                copyText={actionItems.map(item => 
+                  `${item.task} - ${item.assignee}${item.dueDate ? ` (${item.dueDate})` : ''}${item.priority ? ` [${item.priority}]` : ''}`
+                ).join('\n')}
+              />
             </CardHeader>
             <CardContent>
               {actionItems.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-                    <ListTodo className="h-10 w-10 text-slate-400" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#25C9D0]/10 flex items-center justify-center">
+                    <ListTodo className="h-8 w-8 text-[#25C9D0]" />
                   </div>
-                  <p className="text-slate-500 italic">Không có công việc mới được giao</p>
+                  <p className="text-slate-500 italic text-sm">{t('results.sections.actionItems.noItems')}</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {actionItems.map((item, index) => (
                     <div 
                       key={index} 
-                      className="group p-6 bg-white rounded-[16px] border-2 border-slate-200 hover:border-[#25C9D0]/50 hover:shadow-xl transition-all duration-300"
+                      className="p-4 bg-white rounded-[12px] border-l-4 border-[#25C9D0] hover:border-[#14B8A6] hover:shadow-md transition-all duration-200"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1.5">
-                          <div className="w-6 h-6 rounded-md border-2 border-slate-300 group-hover:border-[#25C9D0] flex items-center justify-center transition-colors">
-                            <div className="w-3 h-3 rounded-sm bg-slate-200 group-hover:bg-[#25C9D0] transition-colors"></div>
-                          </div>
+                      {/* Task Title */}
+                      <p className="font-semibold text-slate-900 text-sm mb-3 leading-relaxed">
+                        {item.task}
+                      </p>
+
+                      {/* Metadata Row */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-[#25C9D0]/10 text-[#25C9D0] border border-[#25C9D0]/20">
+                          <User className="h-3 w-3" />
+                          {item.assignee || t('results.sections.actionItems.unassigned')}
                         </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-slate-900 text-lg mb-4 leading-relaxed">
-                            {item.task}
-                          </p>
-
-                          <div className="flex flex-wrap items-center gap-3">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-bold bg-[#25C9D0]/10 text-[#25C9D0] border-2 border-[#25C9D0]/20">
-                              <User className="h-4 w-4" />
-                              {item.assignee || 'Chưa phân công'}
-                            </div>
-                            {item.dueDate && (
-                              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-bold bg-blue-50 text-blue-700 border-2 border-blue-200">
-                                <Clock className="h-4 w-4" />
-                                {item.dueDate}
-                              </div>
-                            )}
-                            {item.priority && (
-                              <div className={`inline-flex items-center px-4 py-2 rounded-[10px] text-sm font-bold border-2 ${getPriorityColor(item.priority)}`}>
-                                {item.priority}
-                              </div>
-                            )}
+                        {item.dueDate && (
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                            <Clock className="h-3 w-3" />
+                            {item.dueDate}
                           </div>
-
-                          {item.technicalNotes && (
-                            <div className="mt-4 p-4 bg-slate-50 rounded-[12px] border-2 border-slate-200">
-                              <p className="text-xs font-bold text-slate-700 mb-2 flex items-center gap-2">
-                                <Zap className="h-4 w-4 text-[#25C9D0]" />
-                                Yêu cầu kỹ thuật:
-                              </p>
-                              <p className="text-sm text-slate-600 leading-relaxed">{item.technicalNotes}</p>
-                            </div>
-                          )}
-                        </div>
+                        )}
+                        {item.priority && (
+                          <div className={`inline-flex items-center px-2.5 py-1 rounded-[6px] text-xs font-semibold border ${getPriorityColor(item.priority)}`}>
+                            {item.priority}
+                          </div>
+                        )}
                       </div>
+
+                      {/* Technical Notes */}
+                      {item.technicalNotes && (
+                        <div className="mt-3 pt-3 border-t border-slate-100">
+                          <p className="text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                            <Zap className="h-3 w-3 text-[#25C9D0]" />
+                            {t('results.sections.actionItems.technicalNotes')}
+                          </p>
+                          <p className="text-sm text-slate-600 leading-relaxed">{item.technicalNotes}</p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -541,160 +588,223 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </Card>
         </TabsContent>
 
-        {/* Decisions Tab */}
+        {/* Decisions Tab - Creative & Modern Design */}
         <TabsContent value="decisions" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg">
+          <Card className="glass border-[#14B8A6]/20 shadow-xl bg-gradient-to-br from-white via-[#14B8A6]/5 to-white overflow-hidden">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-                    <Target className="h-5 w-5 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">Chốt quyết định</CardTitle>
-                </div>
-                <CopyButton section="decisions" text={keyDecisions.join('\n')} />
-              </div>
+              <SectionHeader
+                icon={Target}
+                title={t('results.sections.decisions.title')}
+                onCopy={() => handleCopy(keyDecisions.join('\n'), 'decisions')}
+                copyText={keyDecisions.join('\n')}
+              />
             </CardHeader>
             <CardContent>
               {keyDecisions.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-                    <Target className="h-10 w-10 text-slate-400" />
+                <div className="text-center py-16">
+                  <div className="relative w-20 h-20 mx-auto mb-6">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#14B8A6]/20 to-[#25C9D0]/20 rounded-full blur-xl animate-pulse"></div>
+                    <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-[#14B8A6]/10 to-[#25C9D0]/10 flex items-center justify-center border-2 border-[#14B8A6]/20">
+                      <Target className="h-10 w-10 text-[#14B8A6]" />
+                    </div>
                   </div>
-                  <p className="text-slate-500 italic">Không có quyết định quan trọng nào được ghi nhận</p>
+                  <p className="text-slate-500 italic text-sm">{t('results.sections.decisions.noDecisions')}</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {keyDecisions.map((decision, index) => (
-                    <div
-                      key={index}
-                      className="group relative p-6 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-50 rounded-[16px] border-l-4 border-amber-400 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
-                          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[12px] flex items-center justify-center shadow-lg">
-                            <Target className="h-6 w-6 text-white" strokeWidth={2.5} />
+                <div className="relative">
+                  {/* Decorative timeline line */}
+                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#14B8A6]/30 via-[#25C9D0]/30 to-[#14B8A6]/30 hidden md:block"></div>
+                  
+                  <div className="space-y-4">
+                    {keyDecisions.map((decision, index) => (
+                      <div
+                        key={index}
+                        className="group relative flex items-start gap-4 md:gap-6"
+                      >
+                        {/* Timeline dot */}
+                        <div className="relative z-10 flex-shrink-0 mt-1">
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-[#14B8A6] rounded-full blur-md opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                            <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#14B8A6] to-[#0F9488] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-2 border-white">
+                              <CheckSquare className="h-5 w-5 md:h-6 md:w-6 text-white" strokeWidth={2.5} />
+                            </div>
+                          </div>
+                          {/* Decision number badge */}
+                          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-md">
+                            {index + 1}
                           </div>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between gap-4">
-                            <p className="text-slate-800 font-semibold leading-relaxed text-base">
-                              {decision}
-                            </p>
-                            <span className="flex-shrink-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-300">
-                              Decision #{index + 1}
-                            </span>
+
+                        {/* Decision content card */}
+                        <div className="flex-1 min-w-0">
+                          <div className="group/card relative p-5 md:p-6 bg-white rounded-[16px] border-2 border-[#14B8A6]/20 shadow-md hover:shadow-xl transition-all duration-300 hover:border-[#14B8A6]/40 hover:-translate-y-1 overflow-hidden">
+                            {/* Gradient overlay on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#14B8A6]/0 to-[#25C9D0]/0 group-hover/card:from-[#14B8A6]/5 group-hover/card:to-[#25C9D0]/5 transition-all duration-300"></div>
+                            
+                            {/* Decorative corner accent */}
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#14B8A6]/10 to-transparent rounded-bl-[100px]"></div>
+                            
+                            <div className="relative z-10">
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Flag className="h-4 w-4 text-[#14B8A6]" />
+                                    <span className="text-xs font-bold text-[#14B8A6] uppercase tracking-wide">
+                                      {t('results.sections.decisions.title')} #{index + 1}
+                                    </span>
+                                  </div>
+                                  <p className="text-slate-800 font-semibold leading-relaxed text-base md:text-lg group-hover/card:text-slate-900 transition-colors">
+                                    {decision}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* Status indicator */}
+                              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100">
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#14B8A6]/10 border border-[#14B8A6]/20">
+                                  <CheckCircleIcon className="h-3.5 w-3.5 text-[#14B8A6]" />
+                                  <span className="text-xs font-semibold text-[#0F9488]">Confirmed</span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Summary Tab */}
+        {/* Summary Tab - Clean & Simple Design */}
         <TabsContent value="summary" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg">
+          <Card className="glass border-[#25C9D0]/20 shadow-xl bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center">
-                    <Award className="h-5 w-5 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">Tổng kết & Bước tiếp theo</CardTitle>
-                </div>
-                <CopyButton
-                  section="summary"
-                  text={`Vướng mắc cần follow-up:\n${summary.blockersToFollowUp.join('\n')}\n\nCông việc ưu tiên:\n${summary.priorityTasks.join('\n')}\n\nTrách nhiệm:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`}
-                />
-              </div>
+              <SectionHeader
+                icon={Award}
+                title={t('results.sections.summary.title')}
+                onCopy={() => handleCopy(
+                  `${t('results.sections.summary.blockersToFollowUp')}:\n${summary.blockersToFollowUp.join('\n')}\n\n${t('results.sections.summary.priorityTasks')}:\n${summary.priorityTasks.join('\n')}\n\n${t('results.sections.summary.responsibilities')}:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`,
+                  'summary'
+                )}
+                copyText={`${t('results.sections.summary.blockersToFollowUp')}:\n${summary.blockersToFollowUp.join('\n')}\n\n${t('results.sections.summary.priorityTasks')}:\n${summary.priorityTasks.join('\n')}\n\n${t('results.sections.summary.responsibilities')}:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`}
+              />
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {/* Blockers */}
+              <div className="space-y-8">
+                {/* Blockers Section */}
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg mb-4 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-[10px] bg-amber-100 flex items-center justify-center">
-                      <AlertCircle className="h-5 w-5 text-amber-600" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#25C9D0]/10 flex items-center justify-center">
+                      <AlertCircle className="h-5 w-5 text-[#25C9D0]" />
                     </div>
-                    Vướng mắc cần follow-up
-                  </h4>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {t('results.sections.summary.blockersToFollowUp')}
+                      </h4>
+                    </div>
+                  </div>
                   {summary.blockersToFollowUp.length > 0 ? (
-                    <ul className="space-y-3">
+                    <div className="space-y-2 pl-13">
                       {summary.blockersToFollowUp.map((blocker, idx) => (
-                        <li key={idx} className="flex items-start gap-3 p-4 bg-amber-50 rounded-[12px] border-2 border-amber-200 hover:border-amber-300 transition-all">
-                          <ArrowRight className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700 font-medium">{blocker}</span>
-                        </li>
+                        <div
+                          key={idx}
+                          className="flex items-start gap-3 p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
+                        >
+                          <span className="text-[#25C9D0] font-bold mt-0.5 flex-shrink-0">•</span>
+                          <p className="text-slate-800 text-sm leading-relaxed flex-1">
+                            {blocker}
+                          </p>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
-                    <p className="text-slate-500 italic pl-11">Không có vướng mắc cần follow-up</p>
+                    <p className="text-slate-400 italic text-sm pl-13">{t('results.sections.summary.noBlockers')}</p>
                   )}
                 </div>
 
-                {/* Priority Tasks */}
+                {/* Divider */}
+                <div className="border-t border-slate-200"></div>
+
+                {/* Priority Tasks Section */}
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg mb-4 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-[10px] bg-[#25C9D0]/20 flex items-center justify-center">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#25C9D0]/10 flex items-center justify-center">
                       <Target className="h-5 w-5 text-[#25C9D0]" />
                     </div>
-                    Công việc ưu tiên trong ngày
-                  </h4>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {t('results.sections.summary.priorityTasks')}
+                      </h4>
+                    </div>
+                  </div>
                   {summary.priorityTasks.length > 0 ? (
-                    <ul className="space-y-3">
+                    <div className="space-y-2 pl-13">
                       {summary.priorityTasks.map((task, idx) => (
-                        <li key={idx} className="flex items-start gap-3 p-4 bg-[#25C9D0]/5 rounded-[12px] border-2 border-[#25C9D0]/20 hover:border-[#25C9D0]/40 transition-all">
-                          <ArrowRight className="h-5 w-5 text-[#25C9D0] mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700 font-medium">{task}</span>
-                        </li>
+                        <div
+                          key={idx}
+                          className="flex items-start gap-3 p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
+                        >
+                          <span className="text-[#25C9D0] font-bold mt-0.5 flex-shrink-0">#{idx + 1}</span>
+                          <p className="text-slate-800 text-sm leading-relaxed flex-1 font-medium">
+                            {task}
+                          </p>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
-                    <p className="text-slate-500 italic pl-11">Không có công việc ưu tiên được ghi nhận</p>
+                    <p className="text-slate-400 italic text-sm pl-13">{t('results.sections.summary.noPriorityTasks')}</p>
                   )}
                 </div>
 
-                {/* Responsibilities */}
+                {/* Divider */}
+                <div className="border-t border-slate-200"></div>
+
+                {/* Responsibilities Section */}
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg mb-4 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-[10px] bg-violet-100 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-violet-600" />
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-[10px] bg-[#14B8A6]/10 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-[#14B8A6]" />
                     </div>
-                    Trách nhiệm & Deadline
-                  </h4>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base">
+                        {t('results.sections.summary.responsibilities')}
+                      </h4>
+                    </div>
+                  </div>
                   {summary.responsibilities.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 pl-13">
                       {summary.responsibilities.map((resp, idx) => (
-                        <div 
-                          key={idx} 
-                          className="p-5 bg-gradient-to-r from-violet-50 to-purple-50 rounded-[16px] border-2 border-violet-200 hover:border-violet-300 hover:shadow-lg transition-all"
+                        <div
+                          key={idx}
+                          className="p-4 bg-white rounded-[12px] border border-slate-200 hover:border-[#14B8A6]/30 hover:shadow-md transition-all"
                         >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <p className="font-bold text-slate-900 mb-3 text-base">{resp.task}</p>
-                              <div className="flex items-center gap-2">
-                                <User className="h-4 w-4 text-violet-600" />
-                                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold bg-violet-100 text-violet-700 border border-violet-300">
-                                  {resp.person}
-                                </span>
-                              </div>
-                            </div>
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <p className="font-semibold text-slate-900 text-sm leading-relaxed flex-1">
+                              {resp.task}
+                            </p>
                             {resp.deadline && (
-                              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-bold bg-blue-50 text-blue-700 border-2 border-blue-200 whitespace-nowrap">
-                                <Clock className="h-4 w-4" />
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap flex-shrink-0">
+                                <Clock className="h-3 w-3" />
                                 {resp.deadline}
                               </div>
                             )}
                           </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#14B8A6] to-[#25C9D0] flex items-center justify-center text-white text-xs font-bold">
+                              {resp.person.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-sm text-slate-700 font-medium">
+                              {resp.person}
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-slate-500 italic pl-11">Không có trách nhiệm được ghi nhận</p>
+                    <p className="text-slate-400 italic text-sm pl-13">{t('results.sections.summary.noResponsibilities')}</p>
                   )}
                 </div>
               </div>
@@ -702,26 +812,26 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </Card>
         </TabsContent>
 
-        {/* Transcript Tab */}
+        {/* Transcript Tab - Enhanced Readability */}
         <TabsContent value="transcript" className="mt-6">
-          <Card className="glass border-[#25C9D0]/20 shadow-lg">
+          <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center shadow-sm">
                     <FileText className="h-5 w-5 text-white" />
                   </div>
-                  <CardTitle className="text-xl">Full Transcript</CardTitle>
+                  <CardTitle className="text-xl font-bold text-slate-900">{t('results.sections.transcript.title')}</CardTitle>
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <div className="relative flex-1 sm:flex-initial">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="Tìm kiếm trong transcript..."
+                      placeholder={t('results.sections.transcript.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-11 pr-10 py-3 border-2 border-slate-200 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] w-full sm:w-72 transition-all"
+                      className="pl-10 pr-9 py-2.5 border-2 border-slate-200 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] w-full sm:w-72 transition-all bg-white"
                     />
                     {searchQuery && (
                       <button
@@ -736,29 +846,33 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 </div>
               </div>
               {searchQuery && (
-                <p className="text-sm text-[#25C9D0] font-semibold mt-2 flex items-center gap-2">
+                <p className="text-sm text-[#25C9D0] font-semibold mt-3 flex items-center gap-2">
                   <Search className="h-4 w-4" />
-                  Tìm thấy {filteredSegments.length} đoạn phù hợp
+                  {t('results.sections.transcript.foundMatches', { count: filteredSegments.length })}
                 </p>
               )}
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-1 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
                 {filteredSegments.length === 0 ? (
                   <div className="text-center py-12">
                     <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 italic">Không tìm thấy đoạn nào phù hợp.</p>
+                    <p className="text-slate-500 italic text-sm">{t('results.sections.transcript.noMatches')}</p>
                   </div>
                 ) : (
-                  filteredSegments.map((segment) => (
+                  filteredSegments.map((segment, idx) => (
                     <div 
                       key={segment.id} 
-                      className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-slate-50 transition-colors group"
+                      className={`flex items-start gap-4 p-3 rounded-[8px] transition-colors ${
+                        idx % 2 === 0 
+                          ? 'bg-white hover:bg-slate-50' 
+                          : 'bg-slate-50/50 hover:bg-slate-100'
+                      }`}
                     >
-                      <span className="flex-shrink-0 text-xs font-mono font-bold text-[#25C9D0] bg-[#25C9D0]/10 px-3 py-2 rounded-[8px] border border-[#25C9D0]/20">
+                      <span className="flex-shrink-0 text-xs font-mono font-semibold text-[#25C9D0] bg-[#25C9D0]/10 px-2.5 py-1.5 rounded-[6px] border border-[#25C9D0]/20">
                         {formatTimestamp(segment.start)}
                       </span>
-                      <p className="text-slate-700 pt-1 leading-relaxed font-medium">
+                      <p className="text-slate-700 pt-0.5 leading-relaxed text-sm font-normal flex-1">
                         {highlightText(segment.text, searchQuery)}
                       </p>
                     </div>

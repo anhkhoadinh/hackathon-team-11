@@ -4,6 +4,7 @@ import { ProcessingStep } from '@/types';
 import { CheckCircle2, Circle, Loader2, XCircle, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface ProcessingStatusProps {
   steps: ProcessingStep[];
@@ -11,6 +12,7 @@ interface ProcessingStatusProps {
 }
 
 export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusProps) {
+  const { t } = useTranslation();
   const currentStep = steps.find(s => s.status === 'processing');
   const currentStepIndex = currentStep ? steps.indexOf(currentStep) : -1;
   const allCompleted = steps.every(s => s.status === 'completed');
@@ -29,23 +31,23 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
               {hasError ? (
                 <span className="flex items-center gap-3 text-red-600">
                   <XCircle className="h-8 w-8" />
-                  Processing Failed
+                  {t('processing.failed')}
                 </span>
               ) : allCompleted ? (
                 <span className="flex items-center gap-3 text-[#25C9D0]">
                   <CheckCircle2 className="h-8 w-8" />
-                  Complete!
+                  {t('processing.complete')}
                 </span>
               ) : (
-                <span className="gradient-text">Processing Your Meeting...</span>
+                <span className="gradient-text">{t('processing.title')}</span>
               )}
             </CardTitle>
             <p className="text-slate-600">
               {hasError
-                ? 'An error occurred during processing'
+                ? t('processing.errorDescription')
                 : allCompleted
-                ? 'Your meeting analysis is ready!'
-                : 'AI is analyzing your meeting recording'}
+                ? t('processing.completeDescription')
+                : t('processing.description')}
             </p>
           </div>
           {!allCompleted && !hasError && (
@@ -54,7 +56,7 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
                 {Math.round(progressPercentage)}%
               </span>
               <span className="text-xs text-slate-500 mt-1">
-                {completedCount} of {totalSteps}
+                {t('processing.progress', { current: completedCount, total: totalSteps })}
               </span>
             </div>
           )}
@@ -130,11 +132,11 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
                     {isActive && (
                       <div className="flex items-center justify-center gap-1 text-xs text-slate-500">
                         <span className="w-1.5 h-1.5 bg-[#25C9D0] rounded-full animate-pulse"></span>
-                        <span>In progress</span>
+                        <span>{t('processing.inProgress')}</span>
                       </div>
                     )}
                     {isCompleted && (
-                      <span className="text-xs text-[#25C9D0] font-medium">✓ Done</span>
+                      <span className="text-xs text-[#25C9D0] font-medium">{t('processing.done')}</span>
                     )}
                   </div>
 
@@ -167,12 +169,12 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
               </div>
               <div className="flex-1">
                 <p className="text-base font-bold text-slate-900 mb-2">
-                  Currently: {currentStep.label}
+                  {t('processing.currently', { step: currentStep.label })}
                 </p>
                 <p className="text-sm text-slate-600">
                   {currentStep.id === 'analyze' 
-                    ? 'AI is analyzing your meeting content. This may take a few minutes. Please wait...'
-                    : 'This may take a few minutes depending on file size. Please don\'t close this window.'}
+                    ? t('processing.analyzeMessage')
+                    : t('processing.waitMessage')}
                 </p>
               </div>
             </div>
@@ -188,10 +190,10 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
               </div>
               <div className="flex-1">
                 <p className="text-base font-bold text-red-900 mb-2">
-                  Error at: {errorStep.label}
+                  {t('processing.errorAt', { step: errorStep.label })}
                 </p>
                 <p className="text-sm text-red-700 mb-4">
-                  Something went wrong during processing. Please try again or contact support if the issue persists.
+                  {t('processing.errorMessage')}
                 </p>
                 {onRetry && (
                   <Button
@@ -200,7 +202,7 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
                     size="sm"
                     className="border-red-300 text-red-700 hover:bg-red-50"
                   >
-                    Try Again
+                    {t('common.tryAgain')}
                   </Button>
                 )}
               </div>
@@ -217,10 +219,10 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
               </div>
               <div className="flex-1">
                 <p className="text-lg font-bold text-slate-900 mb-1">
-                  Analysis Complete! 🎉
+                  {t('processing.successTitle')}
                 </p>
                 <p className="text-sm text-slate-600">
-                  Your meeting has been processed successfully. Scroll down to view the results.
+                  {t('processing.successMessage')}
                 </p>
               </div>
             </div>

@@ -5,6 +5,7 @@ import { Upload, FileAudio, FileVideo, X, Sparkles, CheckCircle2, Clock, DollarS
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { formatFileSize, estimateCost } from '@/lib/utils';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 type Language = 'vi' | 'en' | 'ja';
 
@@ -25,6 +26,7 @@ const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 const ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'mp4', 'webm', 'mpeg'];
 
 export default function FileUpload({ onFileSelect, disabled, language = 'en', onLanguageChange }: FileUploadProps) {
+  const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string>('');
@@ -32,13 +34,13 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
   const validateFile = (file: File): string | null => {
     // Check file size
     if (file.size > MAX_FILE_SIZE) {
-      return `File size exceeds 25MB limit. Current size: ${formatFileSize(file.size)}`;
+      return t('upload.fileSizeExceeded', { size: formatFileSize(file.size) });
     }
 
     // Check file extension
     const extension = file.name.split('.').pop()?.toLowerCase();
     if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
-      return `Invalid file type. Supported formats: ${ALLOWED_EXTENSIONS.join(', ')}`;
+      return t('upload.invalidFileType', { formats: ALLOWED_EXTENSIONS.join(', ') });
     }
 
     return null;
@@ -149,43 +151,43 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
 
                   {/* Hero Text */}
                   <h3 className="text-4xl font-bold text-slate-900 mb-4 leading-tight">
-                    Upload Your Meeting Recording
+                    {t('upload.title')}
                   </h3>
                   <p className="text-lg text-slate-600 mb-3 max-w-2xl">
-                    Drag & drop your file here, or{' '}
+                    {t('upload.subtitle')}{' '}
                     <span className="text-[#25C9D0] font-bold underline decoration-2 underline-offset-4">
-                      browse
+                      {t('upload.browse')}
                     </span>
                   </p>
                   <p className="text-sm text-slate-500 mb-8">
-                    Transform meetings into structured insights with AI
+                    {t('upload.description')}
                   </p>
 
                   {/* Format Support */}
                   <div className="flex items-center justify-center gap-6 mb-8">
                     <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-[12px] border border-slate-200 shadow-sm">
                       <FileAudio className="h-5 w-5 text-[#25C9D0]" />
-                      <span className="text-sm font-semibold text-slate-700">Audio Files</span>
+                      <span className="text-sm font-semibold text-slate-700">{t('upload.audioFiles')}</span>
                     </div>
                     <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-[12px] border border-slate-200 shadow-sm">
                       <FileVideo className="h-5 w-5 text-[#25C9D0]" />
-                      <span className="text-sm font-semibold text-slate-700">Video Files</span>
+                      <span className="text-sm font-semibold text-slate-700">{t('upload.videoFiles')}</span>
                     </div>
                   </div>
 
                   {/* File Info */}
                   <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>MP3, WAV, M4A, MP4, WebM • Max 25MB</span>
+                    <span>{t('upload.supportedFormats')}</span>
                   </div>
 
-                  {/* Transcript Language Selector */}
+                  {/* Transcript Language Selector - NOTE: This is for AI processing, NOT UI language */}
                   {onLanguageChange && (
                     <div className="mt-4 flex items-center justify-center">
                       <div className="inline-flex items-center gap-2 px-3 py-2 bg-white/80 backdrop-blur-sm rounded-[8px] border border-slate-200 shadow-sm">
                         <Globe className="h-3.5 w-3.5 text-[#25C9D0]" />
                         <label htmlFor="transcript-language" className="text-xs font-semibold text-slate-700">
-                          Transcript Language:
+                          {t('upload.transcriptLanguage')}
                         </label>
                         <select
                           id="transcript-language"
@@ -205,8 +207,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                 </label>
 
                 {error && (
-                  <div className="mt-6 p-4 bg-red-50 border-2 border-red-200 rounded-[12px] fade-in-up">
-                    <p className="text-sm font-medium text-red-600">{error}</p>
+                  <div className="mt-6 p-4 bg-red-50/50 border-2 border-red-200 rounded-[12px] fade-in-up">
+                    <p className="text-sm font-medium text-red-700">{error}</p>
                   </div>
                 )}
               </div>
@@ -218,8 +220,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                     <Zap className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 mb-1">AI-Powered</h4>
-                    <p className="text-xs text-slate-600">OpenAI Whisper + GPT-4</p>
+                    <h4 className="font-bold text-sm text-slate-900 mb-1">{t('upload.features.aiPowered.title')}</h4>
+                    <p className="text-xs text-slate-600">{t('upload.features.aiPowered.description')}</p>
                   </div>
                 </div>
 
@@ -228,8 +230,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                     <Clock className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 mb-1">Fast Processing</h4>
-                    <p className="text-xs text-slate-600">Results in minutes</p>
+                    <h4 className="font-bold text-sm text-slate-900 mb-1">{t('upload.features.fastProcessing.title')}</h4>
+                    <p className="text-xs text-slate-600">{t('upload.features.fastProcessing.description')}</p>
                   </div>
                 </div>
 
@@ -238,8 +240,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                     <DollarSign className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 mb-1">Affordable</h4>
-                    <p className="text-xs text-slate-600">~$0.40 per 60 min</p>
+                    <h4 className="font-bold text-sm text-slate-900 mb-1">{t('upload.features.affordable.title')}</h4>
+                    <p className="text-xs text-slate-600">{t('upload.features.affordable.description')}</p>
                   </div>
                 </div>
               </div>
@@ -279,17 +281,17 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
 
                   {/* Metadata Pills */}
                   <div className="flex flex-wrap gap-3">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#25C9D0]/10 to-[#14B8A6]/10 border border-[#25C9D0]/30 text-[#1BA1A8] rounded-[10px] text-sm font-bold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#25C9D0]/10 border border-[#25C9D0]/20 text-[#1BA1A8] rounded-[10px] text-sm font-semibold">
                       <Clock className="h-4 w-4" />
                       <span>~{estimatedDuration} min</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 rounded-[10px] text-sm font-bold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#14B8A6]/10 border border-[#14B8A6]/20 text-[#0F9488] rounded-[10px] text-sm font-semibold">
                       <DollarSign className="h-4 w-4" />
                       <span>${estimatedCostValue.toFixed(2)} est.</span>
                     </div>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 text-violet-700 rounded-[10px] text-sm font-bold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#25C9D0]/10 border border-[#25C9D0]/20 text-[#1BA1A8] rounded-[10px] text-sm font-semibold">
                       <Sparkles className="h-4 w-4" />
-                      <span>AI Analysis</span>
+                      <span>{t('upload.aiAnalysis')}</span>
                     </div>
                   </div>
                 </div>
@@ -300,7 +302,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                 <button
                   onClick={handleRemove}
                   className="flex-shrink-0 text-slate-400 hover:text-red-500 transition-all duration-300 p-3 hover:bg-red-50 rounded-[10px] hover:scale-110"
-                  title="Remove file"
+                  title={t('upload.removeFile')}
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -309,8 +311,8 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
 
             {/* Error Display */}
             {error && (
-              <div className="mt-6 p-4 bg-red-50 border-2 border-red-200 rounded-[12px] fade-in-up">
-                <p className="text-sm font-medium text-red-600">{error}</p>
+              <div className="mt-6 p-4 bg-red-50/50 border-2 border-red-200 rounded-[12px] fade-in-up">
+                <p className="text-sm font-medium text-red-700">{error}</p>
               </div>
             )}
 
@@ -325,7 +327,7 @@ export default function FileUpload({ onFileSelect, disabled, language = 'en', on
                   className="w-full sm:w-auto text-lg px-12 primary-glow"
                 >
                   <Sparkles className="h-5 w-5 mr-3" />
-                  Start AI Analysis
+                  {t('upload.startAnalysis')}
                 </Button>
               </div>
             )}

@@ -1,0 +1,231 @@
+{
+  "common": {
+    "copy": "Sao chép",
+    "copied": "Đã sao chép!",
+    "download": "Tải xuống",
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "retry": "Thử lại",
+    "tryAgain": "Thử lại",
+    "back": "Quay lại",
+    "close": "Đóng",
+    "search": "Tìm kiếm",
+    "clear": "Xóa",
+    "filter": "Lọc",
+    "filters": "Bộ lọc",
+    "sort": "Sắp xếp",
+    "ascending": "Tăng dần",
+    "descending": "Giảm dần",
+    "all": "Tất cả",
+    "none": "Không có",
+    "no": "Không",
+    "yes": "Có",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "view": "Xem",
+    "details": "Chi tiết"
+  },
+  "header": {
+    "appName": "MeetingMind AI",
+    "tagline": "Biến cuộc họp thành thông tin chi tiết có thể hành động ngay lập tức",
+    "history": "Lịch sử",
+    "newMeeting": "MeetingMind Mới"
+  },
+  "upload": {
+    "title": "Tải lên bản ghi cuộc họp của bạn",
+    "subtitle": "Kéo và thả tệp của bạn vào đây, hoặc",
+    "browse": "duyệt",
+    "description": "Biến cuộc họp thành thông tin chi tiết có cấu trúc với AI",
+    "audioFiles": "Tệp âm thanh",
+    "videoFiles": "Tệp video",
+    "supportedFormats": "MP3, WAV, M4A, MP4, WebM • Tối đa 25MB",
+    "transcriptLanguage": "Ngôn ngữ bản ghi:",
+    "startAnalysis": "Bắt đầu phân tích AI",
+    "fileSelected": "Đã chọn tệp",
+    "estimatedDuration": "Thời lượng ước tính",
+    "estimatedCost": "Chi phí ước tính",
+    "aiAnalysis": "Phân tích AI",
+    "removeFile": "Xóa tệp",
+    "fileSizeExceeded": "Kích thước tệp vượt quá giới hạn 25MB. Kích thước hiện tại: {size}",
+    "invalidFileType": "Loại tệp không hợp lệ. Định dạng được hỗ trợ: {formats}",
+    "features": {
+      "aiPowered": {
+        "title": "Được hỗ trợ bởi AI",
+        "description": "OpenAI Whisper + GPT-4"
+      },
+      "fastProcessing": {
+        "title": "Xử lý nhanh",
+        "description": "Kết quả trong vài phút"
+      },
+      "affordable": {
+        "title": "Giá cả phải chăng",
+        "description": "~$0.40 cho 60 phút"
+      }
+    }
+  },
+  "processing": {
+    "title": "Đang xử lý cuộc họp của bạn...",
+    "complete": "Hoàn thành!",
+    "failed": "Xử lý thất bại",
+    "description": "AI đang phân tích bản ghi cuộc họp của bạn",
+    "completeDescription": "Phân tích cuộc họp của bạn đã sẵn sàng!",
+    "errorDescription": "Đã xảy ra lỗi trong quá trình xử lý",
+    "progress": "{current} trong {total}",
+    "inProgress": "Đang xử lý",
+    "done": "✓ Hoàn thành",
+    "currently": "Hiện tại: {step}",
+    "analyzeMessage": "AI đang phân tích nội dung cuộc họp của bạn. Việc này có thể mất vài phút. Vui lòng đợi...",
+    "waitMessage": "Việc này có thể mất vài phút tùy thuộc vào kích thước tệp. Vui lòng không đóng cửa sổ này.",
+    "errorAt": "Lỗi tại: {step}",
+    "errorMessage": "Đã xảy ra sự cố trong quá trình xử lý. Vui lòng thử lại hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn.",
+    "successTitle": "Phân tích hoàn tất! 🎉",
+    "successMessage": "Cuộc họp của bạn đã được xử lý thành công. Cuộn xuống để xem kết quả."
+  },
+  "results": {
+    "title": "Phân tích cuộc họp hoàn tất",
+    "downloadPDF": "Tải xuống PDF",
+    "generating": "Đang tạo...",
+    "processAnother": "Xử lý file khác",
+    "tabs": {
+      "overview": "Tổng quan",
+      "progress": "Tiến độ",
+      "tasks": "Công việc",
+      "decisions": "Quyết định",
+      "summary": "Tổng kết",
+      "transcript": "Bản ghi"
+    },
+    "sections": {
+      "attendance": {
+        "title": "Điểm danh",
+        "present": "Có mặt ({count})",
+        "absent": "Vắng mặt ({count})",
+        "noInfo": "Không có thông tin"
+      },
+      "workload": {
+        "title": "Đánh giá Workload",
+        "overloaded": "Quá tải",
+        "normal": "Bình thường",
+        "free": "Rảnh",
+        "noInfo": "Không có thông tin đánh giá workload"
+      },
+      "personalProgress": {
+        "title": "Cập nhật tiến độ cá nhân",
+        "yesterday": "Hôm qua đã làm",
+        "today": "Hôm nay làm",
+        "blockers": "Vướng mắc/Blocker",
+        "noInfo": "Không có thông tin cập nhật tiến độ",
+        "noInfoItem": "Không có thông tin"
+      },
+      "actionItems": {
+        "title": "Giao việc mới & Điều chuyển",
+        "noItems": "Không có công việc mới được giao",
+        "unassigned": "Chưa phân công",
+        "technicalNotes": "Yêu cầu kỹ thuật:"
+      },
+      "decisions": {
+        "title": "Chốt quyết định",
+        "noDecisions": "Không có quyết định quan trọng nào được ghi nhận"
+      },
+      "summary": {
+        "title": "Tổng kết & Bước tiếp theo",
+        "blockersToFollowUp": "Vướng mắc cần follow-up",
+        "priorityTasks": "Công việc ưu tiên trong ngày",
+        "responsibilities": "Trách nhiệm & Deadline",
+        "noBlockers": "Không có vướng mắc cần follow-up",
+        "noPriorityTasks": "Không có công việc ưu tiên được ghi nhận",
+        "noResponsibilities": "Không có trách nhiệm được ghi nhận"
+      },
+      "transcript": {
+        "title": "Bản ghi đầy đủ",
+        "searchPlaceholder": "Tìm kiếm trong transcript...",
+        "foundMatches": "Tìm thấy {count} đoạn phù hợp",
+        "noMatches": "Không tìm thấy đoạn nào phù hợp."
+      }
+    },
+    "priority": {
+      "high": "Cao",
+      "medium": "Trung bình",
+      "low": "Thấp"
+    }
+  },
+  "history": {
+    "title": "Lịch sử cuộc họp",
+    "subtitle": "Xem và quản lý tất cả các cuộc họp đã ghi của bạn",
+    "filters": {
+      "title": "Bộ lọc",
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tìm kiếm theo tiêu đề, người tham gia hoặc nội dung...",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "source": "Nguồn",
+      "allSources": "Tất cả nguồn",
+      "fileUpload": "Tải lên tệp",
+      "extension": "Tiện ích mở rộng",
+      "sortBy": "Sắp xếp theo:",
+      "meetingDate": "Ngày cuộc họp",
+      "createdDate": "Ngày tạo",
+      "duration": "Thời lượng",
+      "title": "Tiêu đề",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "empty": {
+      "title": "Không tìm thấy cuộc họp",
+      "message": "Thử điều chỉnh bộ lọc của bạn",
+      "messageNoFilters": "Bắt đầu bằng cách tải lên bản ghi hoặc sử dụng tiện ích mở rộng Chrome",
+      "cta": "Xử lý cuộc họp đầu tiên của bạn"
+    },
+    "showing": "Hiển thị {count} cuộc họp",
+    "loading": "Đang tải cuộc họp...",
+    "error": "Không thể tải cuộc họp"
+  },
+  "meetingDetail": {
+    "backToHistory": "Quay lại lịch sử",
+    "notFound": "Không tìm thấy cuộc họp",
+    "notFoundMessage": "Không thể tìm thấy cuộc họp này.",
+    "loading": "Đang tải cuộc họp...",
+    "source": {
+      "upload": "Tải lên",
+      "extension": "Tiện ích mở rộng"
+    }
+  },
+  "resultsPage": {
+    "title": "Kết quả cuộc họp",
+    "subtitle": "Đã ghi qua tiện ích mở rộng Chrome",
+    "noResults": "Không tìm thấy kết quả",
+    "noResultsMessage": "Không tìm thấy kết quả cuộc họp. Vui lòng ghi lại cuộc họp bằng tiện ích mở rộng Chrome trước.",
+    "goToHome": "Về trang chủ",
+    "backToHome": "Quay lại trang chủ",
+    "loading": "Đang tải kết quả..."
+  },
+  "footer": {
+    "features": {
+      "aiPowered": {
+        "title": "Được hỗ trợ bởi AI",
+        "description": "Sử dụng OpenAI Whisper & GPT-4 để chuyển văn bản chính xác và phân tích thông minh"
+      },
+      "multiLanguage": {
+        "title": "Đa ngôn ngữ",
+        "description": "Hỗ trợ tiếng Việt, tiếng Anh và tiếng Nhật với xử lý ngôn ngữ bản địa"
+      },
+      "pdfReports": {
+        "title": "Báo cáo PDF",
+        "description": "Tạo báo cáo PDF chuyên nghiệp với thông tin chi tiết có cấu trúc và các mục hành động"
+      }
+    },
+    "costEffective": "Tiết kiệm chi phí: ~$0.40 cho cuộc họp 60 phút",
+    "tagline": "Được xây dựng để tài liệu hóa cuộc họp hiệu quả và cộng tác nhóm"
+  },
+  "errors": {
+    "processingError": "Lỗi xử lý",
+    "transcriptionFailed": "Chuyển văn bản thất bại",
+    "analysisFailed": "Phân tích thất bại",
+    "pdfGenerationFailed": "Tạo PDF thất bại",
+    "pdfDownloadFailed": "Không thể tạo PDF. Vui lòng thử lại.",
+    "meetingNotFound": "Không tìm thấy cuộc họp",
+    "failedToFetch": "Không thể tải cuộc họp"
+  }
+}
+

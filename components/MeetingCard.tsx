@@ -8,7 +8,7 @@ interface Meeting {
   title: string;
   meetingDate: string;
   duration: number;
-  summary: string[];
+  summary: string[] | any; // Can be array (old) or object (new)
   actionItems: Array<{ task: string; assignee: string }>;
   keyDecisions: string[];
   participants: string[];
@@ -40,10 +40,21 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
     });
   };
 
+  // Handle both old (array) and new (object) summary formats
+  const getSummaryCount = () => {
+    if (Array.isArray(meeting.summary)) {
+      return meeting.summary.length;
+    } else if (typeof meeting.summary === 'object' && meeting.summary !== null) {
+      // New format: count priority tasks
+      return meeting.summary.priorityTasks?.length || 0;
+    }
+    return 0;
+  };
+
   return (
     <Link
       href={`/history/${meeting.id}`}
-      className="block glass border-[#25C9D0]/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 card-hover group"
+      className="block glass border-[#25C9D0]/20 rounded-[16px] shadow-lg hover:shadow-xl transition-all duration-300 card-hover group"
     >
       <div className="p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
@@ -54,7 +65,7 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
               </h3>
               <span className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-bold border-2 ${
                 meeting.source === 'extension'
-                  ? 'bg-purple-100 text-purple-700 border-purple-200'
+                  ? 'bg-[#14B8A6]/10 text-[#0F9488] border-[#14B8A6]/20'
                   : 'bg-[#25C9D0]/10 text-[#25C9D0] border-[#25C9D0]/20'
               }`}>
                 {meeting.source === 'extension' ? 'Extension' : 'Upload'}
@@ -79,22 +90,22 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-br from-[#25C9D0]/5 to-[#14B8A6]/5 rounded-lg border border-[#25C9D0]/10">
+              <div className="flex items-center gap-2 p-3 bg-[#25C9D0]/5 rounded-[10px] border border-[#25C9D0]/10">
                 <FileText className="w-4 h-4 text-[#25C9D0]" />
                 <div>
                   <div className="text-xs text-slate-500">Summary</div>
-                  <div className="text-sm font-bold text-slate-900">{meeting.summary.length} points</div>
+                  <div className="text-sm font-bold text-slate-900">{getSummaryCount()} points</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border border-indigo-100">
-                <ListTodo className="w-4 h-4 text-indigo-600" />
+              <div className="flex items-center gap-2 p-3 bg-[#14B8A6]/5 rounded-[10px] border border-[#14B8A6]/10">
+                <ListTodo className="w-4 h-4 text-[#14B8A6]" />
                 <div>
                   <div className="text-xs text-slate-500">Tasks</div>
                   <div className="text-sm font-bold text-slate-900">{meeting.actionItems.length} items</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border border-amber-100">
-                <Target className="w-4 h-4 text-amber-600" />
+              <div className="flex items-center gap-2 p-3 bg-[#25C9D0]/5 rounded-[10px] border border-[#25C9D0]/10">
+                <Target className="w-4 h-4 text-[#25C9D0]" />
                 <div>
                   <div className="text-xs text-slate-500">Decisions</div>
                   <div className="text-sm font-bold text-slate-900">{meeting.keyDecisions.length} decisions</div>
@@ -104,7 +115,7 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
           </div>
 
           <div className="flex-shrink-0">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg shadow-[#25C9D0]/30">
+            <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-lg shadow-[#25C9D0]/30">
               <ChevronRight className="w-5 h-5" />
             </div>
           </div>
