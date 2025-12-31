@@ -39,11 +39,8 @@ export default function Header({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Logo & Brand */}
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] rounded-[16px] blur-lg opacity-60"></div>
-              <div className="relative flex items-center justify-center w-14 h-14 rounded-[16px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] text-white shadow-xl shadow-[#25C9D0]/30">
-                {defaultIcon}
-              </div>
+            <div className="relative flex items-center justify-center w-14 h-14 rounded-[16px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] text-white">
+              {defaultIcon}
             </div>
             <div>
               <h1 className="text-2xl font-bold gradient-text flex items-center gap-2">

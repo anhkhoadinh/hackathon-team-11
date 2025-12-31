@@ -162,16 +162,20 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
   );
 
   return (
-    <div className="space-y-6 fade-in-up max-w-7xl mx-auto">
-      {/* Header Card - Refined */}
+    <div className="fade-in-up max-w-7xl mx-auto">
+      {/* Unified Result Panel - Single Container */}
       <Card className="glass border-[#25C9D0]/20 shadow-xl overflow-hidden bg-gradient-to-br from-white to-[#25C9D0]/5">
+        {/* Decorative top gradient bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#25C9D0] via-[#14B8A6] to-[#25C9D0] bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]"></div>
-        <CardHeader>
+        
+        {/* Header Section */}
+        <CardHeader className="pb-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            {/* Left: Title and Metadata */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-[12px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center shadow-lg shadow-[#25C9D0]/30">
-                  <Sparkles className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 rounded-[12px] bg-[#25C9D0]/10 flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-[#25C9D0]" />
                 </div>
                 <div>
                   <CardTitle className="text-3xl font-bold gradient-text">
@@ -196,17 +200,19 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 </div>
               </div>
             </div>
+            
+            {/* Right: Primary Actions */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Button 
                 onClick={handleDownload}
                 disabled={isDownloading}
                 size="lg"
-                variant="primary"
-                className="shadow-lg hover:shadow-xl"
+                variant="outline"
+                className="border-2 border-slate-200 hover:border-[#25C9D0]/50 hover:bg-[#25C9D0]/5"
               >
                 {isDownloading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#25C9D0] border-t-transparent mr-2"></div>
                     {t('results.generating')}
                   </>
                 ) : (
@@ -227,66 +233,76 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             </div>
           </div>
         </CardHeader>
-      </Card>
 
-      {/* Tabs Navigation - Enhanced */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-between overflow-x-auto glass border-[#25C9D0]/20 p-1.5 gap-1 shadow-lg bg-white/80">
-          <TabsTrigger value="overview" className="gap-2 flex-1 min-w-0">
-            <Users className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('results.tabs.overview')}</span>
-          </TabsTrigger>
-          <TabsTrigger value="progress" className="gap-2 flex-1 min-w-0">
-            <TrendingUp className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('results.tabs.progress')}</span>
-            {personalProgress.length > 0 && (
-              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
-                activeTab === 'progress' 
-                  ? 'bg-white/30 text-white border border-white/50' 
-                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
-              }`}>
-                {personalProgress.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="tasks" className="gap-2 flex-1 min-w-0">
-            <ListTodo className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('results.tabs.tasks')}</span>
-            {actionItems.length > 0 && (
-              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
-                activeTab === 'tasks' 
-                  ? 'bg-white/30 text-white border border-white/50' 
-                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
-              }`}>
-                {actionItems.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="decisions" className="gap-2 flex-1 min-w-0">
-            <Target className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('results.tabs.decisions')}</span>
-            {keyDecisions.length > 0 && (
-              <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
-                activeTab === 'decisions' 
-                  ? 'bg-white/30 text-white border border-white/50' 
-                  : 'bg-[#25C9D0]/20 text-[#25C9D0]'
-              }`}>
-                {keyDecisions.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="summary" className="gap-2 flex-1 min-w-0">
-            <Award className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('results.tabs.summary')}</span>
-          </TabsTrigger>
-          <TabsTrigger value="transcript" className="gap-2 flex-1 min-w-0">
-            <FileText className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{t('results.tabs.transcript')}</span>
-          </TabsTrigger>
-        </TabsList>
+        {/* Divider */}
+        <div className="border-t border-slate-200/60 mx-6"></div>
 
-        {/* Overview Tab - Refined */}
-        <TabsContent value="overview" className="mt-6">
+        {/* Tabs Navigation - Inside the unified container, fixed like table header */}
+        <div className="px-6 pt-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <div className="sticky top-0 z-10 bg-gradient-to-br from-white to-[#25C9D0]/5 pb-4 -mx-6 px-6">
+              <TabsList className="w-full justify-between glass border-[#25C9D0]/20 p-1.5 gap-1 shadow-lg bg-white/80">
+              <TabsTrigger value="overview" className="gap-2 flex-1 min-w-0">
+                <Users className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{t('results.tabs.overview')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="progress" className="gap-2 flex-1 min-w-0">
+                <TrendingUp className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{t('results.tabs.progress')}</span>
+                {personalProgress.length > 0 && (
+                  <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                    activeTab === 'progress' 
+                      ? 'bg-white/30 text-white border border-white/50' 
+                      : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+                  }`}>
+                    {personalProgress.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="tasks" className="gap-2 flex-1 min-w-0">
+                <ListTodo className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{t('results.tabs.tasks')}</span>
+                {actionItems.length > 0 && (
+                  <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                    activeTab === 'tasks' 
+                      ? 'bg-white/30 text-white border border-white/50' 
+                      : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+                  }`}>
+                    {actionItems.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="decisions" className="gap-2 flex-1 min-w-0">
+                <Target className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{t('results.tabs.decisions')}</span>
+                {keyDecisions.length > 0 && (
+                  <span className={`ml-1 px-2 py-0.5 text-xs rounded-full font-bold flex-shrink-0 ${
+                    activeTab === 'decisions' 
+                      ? 'bg-white/30 text-white border border-white/50' 
+                      : 'bg-[#25C9D0]/20 text-[#25C9D0]'
+                  }`}>
+                    {keyDecisions.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="summary" className="gap-2 flex-1 min-w-0">
+                <Award className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{t('results.tabs.summary')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="transcript" className="gap-2 flex-1 min-w-0">
+                <FileText className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{t('results.tabs.transcript')}</span>
+              </TabsTrigger>
+              </TabsList>
+              
+              {/* Subtle divider below tabs */}
+              <div className="border-t border-slate-200/40 mt-4"></div>
+            </div>
+
+            {/* Tab Content Area */}
+            <div className="pb-6">
+          {/* Overview Tab - Refined */}
+          <TabsContent value="overview" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Attendance Card */}
             <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
@@ -397,10 +413,10 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Progress Tab - Refined */}
-        <TabsContent value="progress" className="mt-6">
+          {/* Progress Tab - Refined */}
+          <TabsContent value="progress" className="mt-6">
           <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <SectionHeader
@@ -453,7 +469,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                             <ul className="space-y-1.5 pl-7">
                               {progress.yesterday.map((task, i) => (
                                 <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
-                                  <span className="text-[#25C9D0] font-bold mt-1">•</span>
+                                  <span className="text-[#25C9D0] font-bold">•</span>
                                   <span>{task}</span>
                                 </li>
                               ))}
@@ -475,7 +491,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                             <ul className="space-y-1.5 pl-7">
                               {progress.today.map((task, i) => (
                                 <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
-                                  <span className="text-[#25C9D0] font-bold mt-1">•</span>
+                                  <span className="text-[#25C9D0] font-bold">•</span>
                                   <span>{task}</span>
                                 </li>
                               ))}
@@ -497,7 +513,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                             <ul className="space-y-1.5 pl-7">
                               {progress.blockers.map((blocker, i) => (
                                 <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
-                                  <span className="text-[#25C9D0] font-bold mt-1">•</span>
+                                  <span className="text-[#25C9D0] font-bold">•</span>
                                   <span>{blocker}</span>
                                 </li>
                               ))}
@@ -511,10 +527,10 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Tasks Tab - Clean & Simple Design */}
-        <TabsContent value="tasks" className="mt-6">
+          {/* Tasks Tab - Clean & Simple Design */}
+          <TabsContent value="tasks" className="mt-6">
           <Card className="glass border-[#25C9D0]/20 shadow-xl bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <SectionHeader
@@ -586,10 +602,10 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Decisions Tab - Creative & Modern Design */}
-        <TabsContent value="decisions" className="mt-6">
+          {/* Decisions Tab - Creative & Modern Design */}
+          <TabsContent value="decisions" className="mt-6">
           <Card className="glass border-[#14B8A6]/20 shadow-xl bg-gradient-to-br from-white via-[#14B8A6]/5 to-white overflow-hidden">
             <CardHeader>
               <SectionHeader
@@ -676,10 +692,10 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Summary Tab - Clean & Simple Design */}
-        <TabsContent value="summary" className="mt-6">
+          {/* Summary Tab - Clean & Simple Design */}
+          <TabsContent value="summary" className="mt-6">
           <Card className="glass border-[#25C9D0]/20 shadow-xl bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <SectionHeader
@@ -711,10 +727,9 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       {summary.blockersToFollowUp.map((blocker, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-3 p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
+                          className="p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <span className="text-[#25C9D0] font-bold mt-0.5 flex-shrink-0">•</span>
-                          <p className="text-slate-800 text-sm leading-relaxed flex-1">
+                          <p className="text-slate-800 text-sm leading-relaxed">
                             {blocker}
                           </p>
                         </div>
@@ -745,10 +760,9 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       {summary.priorityTasks.map((task, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-3 p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
+                          className="p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <span className="text-[#25C9D0] font-bold mt-0.5 flex-shrink-0">#{idx + 1}</span>
-                          <p className="text-slate-800 text-sm leading-relaxed flex-1 font-medium">
+                          <p className="text-slate-800 text-sm leading-relaxed font-medium">
                             {task}
                           </p>
                         </div>
@@ -765,8 +779,8 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 {/* Responsibilities Section */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-[10px] bg-[#14B8A6]/10 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-[#14B8A6]" />
+                    <div className="w-10 h-10 rounded-[10px] bg-[#25C9D0]/10 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-[#25C9D0]" />
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-900 text-base">
@@ -775,30 +789,28 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                     </div>
                   </div>
                   {summary.responsibilities.length > 0 ? (
-                    <div className="space-y-3 pl-13">
+                    <div className="space-y-2 pl-13">
                       {summary.responsibilities.map((resp, idx) => (
                         <div
                           key={idx}
-                          className="p-4 bg-white rounded-[12px] border border-slate-200 hover:border-[#14B8A6]/30 hover:shadow-md transition-all"
+                          className="p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <div className="flex items-start justify-between gap-4 mb-3">
-                            <p className="font-semibold text-slate-900 text-sm leading-relaxed flex-1">
-                              {resp.task}
-                            </p>
+                          <p className="text-slate-800 text-sm leading-relaxed font-medium">
+                            {resp.task}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white text-xs font-bold">
+                              {resp.person.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-xs text-slate-600 font-medium">
+                              {resp.person}
+                            </span>
                             {resp.deadline && (
-                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap flex-shrink-0">
+                              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                                 <Clock className="h-3 w-3" />
                                 {resp.deadline}
                               </div>
                             )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#14B8A6] to-[#25C9D0] flex items-center justify-center text-white text-xs font-bold">
-                              {resp.person.charAt(0).toUpperCase()}
-                            </div>
-                            <span className="text-sm text-slate-700 font-medium">
-                              {resp.person}
-                            </span>
                           </div>
                         </div>
                       ))}
@@ -810,10 +822,10 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Transcript Tab - Enhanced Readability */}
-        <TabsContent value="transcript" className="mt-6">
+          {/* Transcript Tab - Enhanced Readability */}
+          <TabsContent value="transcript" className="mt-6">
           <Card className="glass border-[#25C9D0]/20 shadow-lg bg-gradient-to-br from-white to-[#25C9D0]/5">
             <CardHeader>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -881,8 +893,11 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+      </Card>
     </div>
   );
 }
