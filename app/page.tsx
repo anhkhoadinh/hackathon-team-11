@@ -272,7 +272,7 @@ export default function Home() {
                 <Zap className="h-6 w-6 text-[#25C9D0]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">{t('footer.features.aiPowered.title')}</h4>
+                <h4 className="font-bold text-slate-600 mb-1">{t('footer.features.aiPowered.title')}</h4>
                 <p className="text-sm text-slate-600">
                   {t('footer.features.aiPowered.description')}
                 </p>
@@ -285,7 +285,7 @@ export default function Home() {
                 <Globe className="h-6 w-6 text-[#25C9D0]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">{t('footer.features.multiLanguage.title')}</h4>
+                <h4 className="font-bold text-slate-600 mb-1">{t('footer.features.multiLanguage.title')}</h4>
                 <p className="text-sm text-slate-600">
                   {t('footer.features.multiLanguage.description')}
                 </p>
@@ -298,7 +298,7 @@ export default function Home() {
                 <FileText className="h-6 w-6 text-[#25C9D0]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">{t('footer.features.pdfReports.title')}</h4>
+                <h4 className="font-bold text-slate-600 mb-1">{t('footer.features.pdfReports.title')}</h4>
                 <p className="text-sm text-slate-600">
                   {t('footer.features.pdfReports.description')}
                 </p>

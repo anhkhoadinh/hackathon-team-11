@@ -27,7 +27,7 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
       <CardHeader className="pb-6">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-3xl font-bold text-slate-900 mb-2">
+            <CardTitle className="text-3xl font-bold text-slate-600 mb-2">
               {hasError ? (
                 <span className="flex items-center gap-3 text-red-600">
                   <XCircle className="h-8 w-8" />
@@ -168,7 +168,7 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
                 <Loader2 className="h-6 w-6 text-[#25C9D0] animate-spin" strokeWidth={2.5} />
               </div>
               <div className="flex-1">
-                <p className="text-base font-bold text-slate-900 mb-2">
+                <p className="text-base font-bold text-slate-600 mb-2">
                   {t('processing.currently', { step: currentStep.label })}
                 </p>
                 <p className="text-sm text-slate-600">
@@ -218,7 +218,7 @@ export default function ProcessingStatus({ steps, onRetry }: ProcessingStatusPro
                 <CheckCircle2 className="h-8 w-8 text-[#25C9D0]" strokeWidth={2.5} />
               </div>
               <div className="flex-1">
-                <p className="text-lg font-bold text-slate-900 mb-1">
+                <p className="text-lg font-bold text-slate-600 mb-1">
                   {t('processing.successTitle')}
                 </p>
                 <p className="text-sm text-slate-600">

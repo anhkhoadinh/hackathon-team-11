@@ -88,7 +88,7 @@ export default function UserMenu() {
         aria-haspopup="true"
       >
         {/* Avatar Circle */}
-        <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-semibold text-sm shadow-lg shadow-[#25C9D0]/30">
+        <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-semibold text-sm">
           {MOCK_USER.initials}
         </div>
         {/* Chevron Icon - hidden on mobile */}
@@ -105,11 +105,11 @@ export default function UserMenu() {
           {/* User Info Section */}
           <div className="px-4 py-4 border-b-2 border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-semibold shadow-lg shadow-[#25C9D0]/30">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-semibold">
                 {MOCK_USER.initials}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900 truncate">
+                <p className="text-sm font-semibold text-slate-600 truncate">
                   {MOCK_USER.name}
                 </p>
                 <p className="text-xs text-slate-500 truncate">

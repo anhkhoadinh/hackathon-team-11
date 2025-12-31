@@ -62,7 +62,7 @@ export default function Header({
             {showHistoryLink && (
               <Link
                 href="/history"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all shadow-lg hover:shadow-xl shadow-[#25C9D0]/30"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all"
               >
                 <History className="w-4 h-4" />
                 {t('header.history')}
@@ -72,7 +72,7 @@ export default function Header({
             {showNewMeetingLink && (
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all shadow-lg hover:shadow-xl shadow-[#25C9D0]/30"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all"
               >
                 <Sparkles className="w-4 h-4" />
                 {t('header.newMeeting')}

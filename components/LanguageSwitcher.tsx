@@ -63,7 +63,7 @@ export default function LanguageSwitcher() {
               }`}
             >
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-slate-900">{lang.nativeLabel}</span>
+                <span className="text-sm font-semibold text-slate-600">{lang.nativeLabel}</span>
                 <span className="text-xs text-slate-500">{lang.label}</span>
               </div>
               {locale === lang.value && (

@@ -57,7 +57,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
     const parts = text.split(new RegExp(`(${query})`, 'gi'));
     return parts.map((part, i) =>
       part.toLowerCase() === query.toLowerCase() ? (
-        <mark key={i} className="bg-[#25C9D0]/20 text-slate-900 px-1.5 py-0.5 rounded-md font-medium">
+        <mark key={i} className="bg-[#25C9D0]/20 text-slate-600 px-1.5 py-0.5 rounded-md font-medium">
           {part}
         </mark>
       ) : (
@@ -149,7 +149,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           <Icon className="h-5 w-5 text-white" />
         </div>
         <div>
-          <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <CardTitle className="text-xl font-bold text-slate-600 flex items-center gap-2">
             {title}
             {badge}
           </CardTitle>
@@ -320,7 +320,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               <CardContent className="space-y-6">
                 {/* Present */}
                 <div>
-                  <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <h4 className="font-semibold text-slate-600 mb-3 flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-[#14B8A6]" />
                     {t('results.sections.attendance.present', { count: attendance.present.length })}
                   </h4>
@@ -344,7 +344,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 {/* Absent */}
                 {attendance.absent.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-semibold text-slate-600 mb-3 flex items-center gap-2">
                       <XCircle className="h-5 w-5 text-slate-400" />
                       {t('results.sections.attendance.absent', { count: attendance.absent.length })}
                     </h4>
@@ -397,7 +397,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                               return <IconComponent className={`h-4 w-4 ${getWorkloadIconColor(item.status)}`} />;
                             })()}
                           </div>
-                          <span className="font-semibold text-slate-900">{item.member}</span>
+                          <span className="font-semibold text-slate-600">{item.member}</span>
                         </div>
                         <span className={`inline-flex items-center px-3 py-1.5 rounded-[8px] text-xs font-semibold border ${getWorkloadColor(item.status)}`}>
                           {item.status === 'overloaded' && t('results.sections.workload.overloaded')}
@@ -453,7 +453,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center text-white font-bold text-base shadow-sm">
                           {progress.member.charAt(0).toUpperCase()}
                         </div>
-                        <h3 className="font-bold text-lg text-slate-900">{progress.member}</h3>
+                        <h3 className="font-bold text-lg text-slate-600">{progress.member}</h3>
                       </div>
                       
                       <div className="space-y-4">
@@ -563,7 +563,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       className="p-4 bg-white rounded-[12px] border-l-4 border-[#25C9D0] hover:border-[#14B8A6] hover:shadow-md transition-all duration-200"
                     >
                       {/* Task Title */}
-                      <p className="font-semibold text-slate-900 text-sm mb-3 leading-relaxed">
+                      <p className="font-semibold text-slate-600 text-sm mb-3 leading-relaxed">
                         {item.task}
                       </p>
 
@@ -669,7 +669,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                                       {t('results.sections.decisions.title')} #{index + 1}
                                     </span>
                                   </div>
-                                  <p className="text-slate-800 font-semibold leading-relaxed text-base md:text-lg group-hover/card:text-slate-900 transition-colors">
+                                  <p className="text-slate-600 font-semibold leading-relaxed text-base md:text-lg group-hover/card:text-slate-600 transition-colors">
                                     {decision}
                                   </p>
                                 </div>
@@ -717,7 +717,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       <AlertCircle className="h-5 w-5 text-[#25C9D0]" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-base">
+                      <h4 className="font-bold text-slate-600 text-base">
                         {t('results.sections.summary.blockersToFollowUp')}
                       </h4>
                     </div>
@@ -729,7 +729,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                           key={idx}
                           className="p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <p className="text-slate-800 text-sm leading-relaxed">
+                          <p className="text-slate-600 text-sm leading-relaxed">
                             {blocker}
                           </p>
                         </div>
@@ -750,7 +750,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       <Target className="h-5 w-5 text-[#25C9D0]" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-base">
+                      <h4 className="font-bold text-slate-600 text-base">
                         {t('results.sections.summary.priorityTasks')}
                       </h4>
                     </div>
@@ -762,7 +762,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                           key={idx}
                           className="p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <p className="text-slate-800 text-sm leading-relaxed font-medium">
+                          <p className="text-slate-600 text-sm leading-relaxed font-medium">
                             {task}
                           </p>
                         </div>
@@ -783,7 +783,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       <Users className="h-5 w-5 text-[#25C9D0]" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-base">
+                      <h4 className="font-bold text-slate-600 text-base">
                         {t('results.sections.summary.responsibilities')}
                       </h4>
                     </div>
@@ -795,7 +795,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                           key={idx}
                           className="p-3 bg-[#25C9D0]/5 rounded-[10px] border-l-4 border-[#25C9D0] hover:bg-[#25C9D0]/10 transition-colors"
                         >
-                          <p className="text-slate-800 text-sm leading-relaxed font-medium">
+                          <p className="text-slate-600 text-sm leading-relaxed font-medium">
                             {resp.task}
                           </p>
                           <div className="flex items-center gap-2 mt-2">

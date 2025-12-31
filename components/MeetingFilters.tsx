@@ -41,7 +41,7 @@ export default function MeetingFilters({
         <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center">
           <Filter className="h-5 w-5 text-white" />
         </div>
-        <h2 className="text-lg font-semibold text-slate-900">Filters & Search</h2>
+        <h2 className="text-lg font-semibold text-slate-600">Filters & Search</h2>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">

@@ -60,7 +60,7 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#25C9D0] transition-colors truncate">
+              <h3 className="text-lg font-bold text-slate-600 group-hover:text-[#25C9D0] transition-colors truncate">
                 {meeting.title}
               </h3>
               <span className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-bold border-2 ${
@@ -94,21 +94,21 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
                 <FileText className="w-4 h-4 text-[#25C9D0]" />
                 <div>
                   <div className="text-xs text-slate-500">Summary</div>
-                  <div className="text-sm font-bold text-slate-900">{getSummaryCount()} points</div>
+                  <div className="text-sm font-bold text-slate-600">{getSummaryCount()} points</div>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-3 bg-[#14B8A6]/5 rounded-[10px] border border-[#14B8A6]/10">
                 <ListTodo className="w-4 h-4 text-[#14B8A6]" />
                 <div>
                   <div className="text-xs text-slate-500">Tasks</div>
-                  <div className="text-sm font-bold text-slate-900">{meeting.actionItems.length} items</div>
+                  <div className="text-sm font-bold text-slate-600">{meeting.actionItems.length} items</div>
                 </div>
               </div>
               <div className="flex items-center gap-2 p-3 bg-[#25C9D0]/5 rounded-[10px] border border-[#25C9D0]/10">
                 <Target className="w-4 h-4 text-[#25C9D0]" />
                 <div>
                   <div className="text-xs text-slate-500">Decisions</div>
-                  <div className="text-sm font-bold text-slate-900">{meeting.keyDecisions.length} decisions</div>
+                  <div className="text-sm font-bold text-slate-600">{meeting.keyDecisions.length} decisions</div>
                 </div>
               </div>
             </div>
