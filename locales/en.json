@@ -1,0 +1,231 @@
+{
+  "common": {
+    "copy": "Copy",
+    "copied": "Copied!",
+    "download": "Download",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "tryAgain": "Try Again",
+    "back": "Back",
+    "close": "Close",
+    "search": "Search",
+    "clear": "Clear",
+    "filter": "Filter",
+    "filters": "Filters",
+    "sort": "Sort",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "all": "All",
+    "none": "None",
+    "no": "No",
+    "yes": "Yes",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "details": "Details"
+  },
+  "header": {
+    "appName": "MeetingMind AI",
+    "tagline": "Transform meetings into actionable insights instantly",
+    "history": "History",
+    "newMeeting": "New MeetingMind"
+  },
+  "upload": {
+    "title": "Upload Your Meeting Recording",
+    "subtitle": "Drag & drop your file here, or",
+    "browse": "browse",
+    "description": "Transform meetings into structured insights with AI",
+    "audioFiles": "Audio Files",
+    "videoFiles": "Video Files",
+    "supportedFormats": "MP3, WAV, M4A, MP4, WebM • Max 25MB",
+    "transcriptLanguage": "Transcript Language:",
+    "startAnalysis": "Start AI Analysis",
+    "fileSelected": "File Selected",
+    "estimatedDuration": "Estimated Duration",
+    "estimatedCost": "Estimated Cost",
+    "aiAnalysis": "AI Analysis",
+    "removeFile": "Remove file",
+    "fileSizeExceeded": "File size exceeds 25MB limit. Current size: {size}",
+    "invalidFileType": "Invalid file type. Supported formats: {formats}",
+    "features": {
+      "aiPowered": {
+        "title": "AI-Powered",
+        "description": "OpenAI Whisper + GPT-4"
+      },
+      "fastProcessing": {
+        "title": "Fast Processing",
+        "description": "Results in minutes"
+      },
+      "affordable": {
+        "title": "Affordable",
+        "description": "~$0.40 per 60 min"
+      }
+    }
+  },
+  "processing": {
+    "title": "Processing Your Meeting...",
+    "complete": "Complete!",
+    "failed": "Processing Failed",
+    "description": "AI is analyzing your meeting recording",
+    "completeDescription": "Your meeting analysis is ready!",
+    "errorDescription": "An error occurred during processing",
+    "progress": "{current} of {total}",
+    "inProgress": "In progress",
+    "done": "✓ Done",
+    "currently": "Currently: {step}",
+    "analyzeMessage": "AI is analyzing your meeting content. This may take a few minutes. Please wait...",
+    "waitMessage": "This may take a few minutes depending on file size. Please don't close this window.",
+    "errorAt": "Error at: {step}",
+    "errorMessage": "Something went wrong during processing. Please try again or contact support if the issue persists.",
+    "successTitle": "Analysis Complete! 🎉",
+    "successMessage": "Your meeting has been processed successfully. Scroll down to view the results."
+  },
+  "results": {
+    "title": "Meeting Analysis Complete",
+    "downloadPDF": "Download PDF",
+    "generating": "Generating...",
+    "processAnother": "Process Another File",
+    "tabs": {
+      "overview": "Overview",
+      "progress": "Progress",
+      "tasks": "Tasks",
+      "decisions": "Decisions",
+      "summary": "Summary",
+      "transcript": "Transcript"
+    },
+    "sections": {
+      "attendance": {
+        "title": "Attendance",
+        "present": "Present ({count})",
+        "absent": "Absent ({count})",
+        "noInfo": "No information available"
+      },
+      "workload": {
+        "title": "Workload Assessment",
+        "overloaded": "Overloaded",
+        "normal": "Normal",
+        "free": "Available",
+        "noInfo": "No workload assessment information available"
+      },
+      "personalProgress": {
+        "title": "Personal Progress Updates",
+        "yesterday": "Completed Yesterday",
+        "today": "Working Today",
+        "blockers": "Blockers/Issues",
+        "noInfo": "No progress update information available",
+        "noInfoItem": "No information available"
+      },
+      "actionItems": {
+        "title": "New Assignments & Transfers",
+        "noItems": "No new assignments",
+        "unassigned": "Unassigned",
+        "technicalNotes": "Technical Requirements:"
+      },
+      "decisions": {
+        "title": "Key Decisions",
+        "noDecisions": "No important decisions recorded"
+      },
+      "summary": {
+        "title": "Summary & Next Steps",
+        "blockersToFollowUp": "Blockers to Follow Up",
+        "priorityTasks": "Priority Tasks Today",
+        "responsibilities": "Responsibilities & Deadlines",
+        "noBlockers": "No blockers to follow up",
+        "noPriorityTasks": "No priority tasks recorded",
+        "noResponsibilities": "No responsibilities recorded"
+      },
+      "transcript": {
+        "title": "Full Transcript",
+        "searchPlaceholder": "Search in transcript...",
+        "foundMatches": "Found {count} matching segments",
+        "noMatches": "No matching segments found."
+      }
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "history": {
+    "title": "Meeting History",
+    "subtitle": "View and manage all your recorded meetings",
+    "filters": {
+      "title": "Filters",
+      "search": "Search",
+      "searchPlaceholder": "Search by title, participants, or content...",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "source": "Source",
+      "allSources": "All Sources",
+      "fileUpload": "File Upload",
+      "extension": "Extension",
+      "sortBy": "Sort by:",
+      "meetingDate": "Meeting Date",
+      "createdDate": "Created Date",
+      "duration": "Duration",
+      "title": "Title",
+      "clearFilters": "Clear Filters"
+    },
+    "empty": {
+      "title": "No meetings found",
+      "message": "Try adjusting your filters",
+      "messageNoFilters": "Start by uploading a recording or using the Chrome extension",
+      "cta": "Process Your First Meeting"
+    },
+    "showing": "Showing {count} meeting{plural}",
+    "loading": "Loading meetings...",
+    "error": "Failed to fetch meetings"
+  },
+  "meetingDetail": {
+    "backToHistory": "Back to History",
+    "notFound": "Meeting Not Found",
+    "notFoundMessage": "This meeting could not be found.",
+    "loading": "Loading meeting...",
+    "source": {
+      "upload": "Upload",
+      "extension": "Extension"
+    }
+  },
+  "resultsPage": {
+    "title": "Meeting Results",
+    "subtitle": "Recorded via Chrome Extension",
+    "noResults": "No Results Found",
+    "noResultsMessage": "No meeting results were found. Please record a meeting using the Chrome Extension first.",
+    "goToHome": "Go to Home",
+    "backToHome": "Back to Home",
+    "loading": "Loading results..."
+  },
+  "footer": {
+    "features": {
+      "aiPowered": {
+        "title": "AI-Powered",
+        "description": "Using OpenAI Whisper & GPT-4 for accurate transcription and intelligent analysis"
+      },
+      "multiLanguage": {
+        "title": "Multi-Language",
+        "description": "Supports Vietnamese, English, and Japanese with native language processing"
+      },
+      "pdfReports": {
+        "title": "PDF Reports",
+        "description": "Generate professional PDF reports with structured insights and action items"
+      }
+    },
+    "costEffective": "Cost-effective: ~$0.40 per 60-minute meeting",
+    "tagline": "Built for efficient meeting documentation and team collaboration"
+  },
+  "errors": {
+    "processingError": "Processing Error",
+    "transcriptionFailed": "Transcription failed",
+    "analysisFailed": "Analysis failed",
+    "pdfGenerationFailed": "PDF generation failed",
+    "pdfDownloadFailed": "Failed to generate PDF. Please try again.",
+    "meetingNotFound": "Meeting not found",
+    "failedToFetch": "Failed to fetch meetings"
+  }
+}
+

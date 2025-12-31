@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { Button } from './ui/button';
 import { MeetingResult } from '@/types';
 import { formatTimestamp, formatDuration } from '@/lib/utils';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface ResultDisplayProps {
   result: MeetingResult;
@@ -19,6 +20,7 @@ interface ResultDisplayProps {
 }
 
 export default function ResultDisplay({ result, onDownloadPDF, onReset }: ResultDisplayProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const [copiedSection, setCopiedSection] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -75,9 +77,10 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
   const getPriorityColor = (priority: string | null | undefined) => {
     if (!priority) return 'bg-slate-100 text-slate-700 border-slate-200';
     const p = priority.toLowerCase();
-    if (p.includes('high') || p.includes('cao')) return 'bg-[#25C9D0]/10 text-[#1BA1A8] border-[#25C9D0]/30';
-    if (p.includes('medium') || p.includes('trung')) return 'bg-[#14B8A6]/10 text-[#0F9488] border-[#14B8A6]/30';
-    if (p.includes('low') || p.includes('thấp')) return 'bg-slate-100 text-slate-600 border-slate-200';
+    // Check for English and Vietnamese terms
+    if (p.includes('high') || p.includes('cao') || p.includes('高')) return 'bg-[#25C9D0]/10 text-[#1BA1A8] border-[#25C9D0]/30';
+    if (p.includes('medium') || p.includes('trung') || p.includes('中')) return 'bg-[#14B8A6]/10 text-[#0F9488] border-[#14B8A6]/30';
+    if (p.includes('low') || p.includes('thấp') || p.includes('低')) return 'bg-slate-100 text-slate-600 border-slate-200';
     return 'bg-slate-100 text-slate-700 border-slate-200';
   };
 
@@ -120,12 +123,12 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
       {copiedSection === section ? (
         <>
           <CheckCircle className="h-4 w-4 mr-2 text-[#25C9D0]" />
-          <span className="text-[#25C9D0] font-semibold">Copied!</span>
+          <span className="text-[#25C9D0] font-semibold">{t('common.copied')}</span>
         </>
       ) : (
         <>
           <Copy className="h-4 w-4 mr-2" />
-          Copy
+          {t('common.copy')}
         </>
       )}
     </Button>
@@ -171,7 +174,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 </div>
                 <div>
                   <CardTitle className="text-3xl font-bold gradient-text">
-                    Meeting Analysis Complete
+                    {t('results.title')}
                   </CardTitle>
                 </div>
               </div>
@@ -203,12 +206,12 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 {isDownloading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                    Generating...
+                    {t('results.generating')}
                   </>
                 ) : (
                   <>
                     <Download className="h-4 w-4 mr-2" />
-                    Download PDF
+                    {t('results.downloadPDF')}
                   </>
                 )}
               </Button>
@@ -218,7 +221,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 size="lg"
                 className="border-2 border-slate-200 hover:border-[#25C9D0]/50 hover:bg-[#25C9D0]/5"
               >
-                Xử lý file khác
+                {t('results.processAnother')}
               </Button>
             </div>
           </div>
@@ -230,13 +233,11 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
         <TabsList className="w-full justify-start overflow-x-auto glass border-[#25C9D0]/20 p-1.5 gap-1 shadow-lg bg-white/80">
           <TabsTrigger value="overview" className="gap-2">
             <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Tổng quan</span>
-            <span className="sm:hidden">Overview</span>
+            {t('results.tabs.overview')}
           </TabsTrigger>
           <TabsTrigger value="progress" className="gap-2">
             <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Tiến độ</span>
-            <span className="sm:hidden">Progress</span>
+            {t('results.tabs.progress')}
             {personalProgress.length > 0 && (
               <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
                 {personalProgress.length}
@@ -245,8 +246,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </TabsTrigger>
           <TabsTrigger value="tasks" className="gap-2">
             <ListTodo className="h-4 w-4" />
-            <span className="hidden sm:inline">Công việc</span>
-            <span className="sm:hidden">Tasks</span>
+            {t('results.tabs.tasks')}
             {actionItems.length > 0 && (
               <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
                 {actionItems.length}
@@ -255,8 +255,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </TabsTrigger>
           <TabsTrigger value="decisions" className="gap-2">
             <Target className="h-4 w-4" />
-            <span className="hidden sm:inline">Quyết định</span>
-            <span className="sm:hidden">Decisions</span>
+            {t('results.tabs.decisions')}
             {keyDecisions.length > 0 && (
               <span className="ml-1 px-2 py-0.5 text-xs bg-[#25C9D0]/20 text-[#25C9D0] rounded-full font-bold">
                 {keyDecisions.length}
@@ -265,13 +264,11 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
           </TabsTrigger>
           <TabsTrigger value="summary" className="gap-2">
             <Award className="h-4 w-4" />
-            <span className="hidden sm:inline">Tổng kết</span>
-            <span className="sm:hidden">Summary</span>
+            {t('results.tabs.summary')}
           </TabsTrigger>
           <TabsTrigger value="transcript" className="gap-2">
             <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Transcript</span>
-            <span className="sm:hidden">Text</span>
+            {t('results.tabs.transcript')}
           </TabsTrigger>
         </TabsList>
 
@@ -283,12 +280,12 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               <CardHeader>
                 <SectionHeader
                   icon={Users}
-                  title="Điểm danh"
+                  title={t('results.sections.attendance.title')}
                   onCopy={() => handleCopy(
-                    `Có mặt: ${attendance.present.join(', ')}\nVắng: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`,
+                    `${t('results.sections.attendance.present', { count: attendance.present.length })}: ${attendance.present.join(', ')}\n${t('results.sections.attendance.absent', { count: attendance.absent.length })}: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`,
                     'attendance'
                   )}
-                  copyText={`Có mặt: ${attendance.present.join(', ')}\nVắng: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`}
+                  copyText={`${t('results.sections.attendance.present', { count: attendance.present.length })}: ${attendance.present.join(', ')}\n${t('results.sections.attendance.absent', { count: attendance.absent.length })}: ${attendance.absent.map(a => a.name + (a.reason ? ` (${a.reason})` : '')).join(', ')}`}
                 />
               </CardHeader>
               <CardContent className="space-y-6">
@@ -296,7 +293,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-[#14B8A6]" />
-                    Có mặt ({attendance.present.length})
+                    {t('results.sections.attendance.present', { count: attendance.present.length })}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {attendance.present.length > 0 ? (
@@ -310,7 +307,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                         </div>
                       ))
                     ) : (
-                      <p className="text-slate-500 italic text-sm">Không có thông tin</p>
+                      <p className="text-slate-500 italic text-sm">{t('results.sections.attendance.noInfo')}</p>
                     )}
                   </div>
                 </div>
@@ -320,7 +317,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                       <XCircle className="h-5 w-5 text-slate-400" />
-                      Vắng mặt ({attendance.absent.length})
+                      {t('results.sections.attendance.absent', { count: attendance.absent.length })}
                     </h4>
                     <div className="space-y-2">
                       {attendance.absent.map((person, idx) => (
@@ -353,7 +350,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               <CardHeader>
                 <SectionHeader
                   icon={TrendingUp}
-                  title="Đánh giá Workload"
+                  title={t('results.sections.workload.title')}
                 />
               </CardHeader>
               <CardContent>
@@ -374,14 +371,14 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                           <span className="font-semibold text-slate-900">{item.member}</span>
                         </div>
                         <span className={`inline-flex items-center px-3 py-1.5 rounded-[8px] text-xs font-semibold border ${getWorkloadColor(item.status)}`}>
-                          {item.status === 'overloaded' && 'Quá tải'}
-                          {item.status === 'normal' && 'Bình thường'}
-                          {item.status === 'free' && 'Rảnh'}
+                          {item.status === 'overloaded' && t('results.sections.workload.overloaded')}
+                          {item.status === 'normal' && t('results.sections.workload.normal')}
+                          {item.status === 'free' && t('results.sections.workload.free')}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-slate-500 italic text-center py-8 text-sm">Không có thông tin đánh giá workload</p>
+                    <p className="text-slate-500 italic text-center py-8 text-sm">{t('results.sections.workload.noInfo')}</p>
                   )}
                 </div>
               </CardContent>
@@ -395,15 +392,15 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             <CardHeader>
               <SectionHeader
                 icon={TrendingUp}
-                title="Cập nhật tiến độ cá nhân"
+                title={t('results.sections.personalProgress.title')}
                 onCopy={() => handleCopy(
                   personalProgress.map(p => 
-                    `${p.member}:\n- Hôm qua: ${p.yesterday.join(', ')}\n- Hôm nay: ${p.today.join(', ')}\n- Blocker: ${p.blockers.length > 0 ? p.blockers.join(', ') : 'Không có'}`
+                    `${p.member}:\n- ${t('results.sections.personalProgress.yesterday')}: ${p.yesterday.join(', ')}\n- ${t('results.sections.personalProgress.today')}: ${p.today.join(', ')}\n- ${t('results.sections.personalProgress.blockers')}: ${p.blockers.length > 0 ? p.blockers.join(', ') : t('results.sections.personalProgress.noInfoItem')}`
                   ).join('\n\n'),
                   'progress'
                 )}
                 copyText={personalProgress.map(p => 
-                  `${p.member}:\n- Hôm qua: ${p.yesterday.join(', ')}\n- Hôm nay: ${p.today.join(', ')}\n- Blocker: ${p.blockers.length > 0 ? p.blockers.join(', ') : 'Không có'}`
+                  `${p.member}:\n- ${t('results.sections.personalProgress.yesterday')}: ${p.yesterday.join(', ')}\n- ${t('results.sections.personalProgress.today')}: ${p.today.join(', ')}\n- ${t('results.sections.personalProgress.blockers')}: ${p.blockers.length > 0 ? p.blockers.join(', ') : t('results.sections.personalProgress.noInfoItem')}`
                 ).join('\n\n')}
               />
             </CardHeader>
@@ -413,7 +410,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#25C9D0]/10 flex items-center justify-center">
                     <TrendingUp className="h-8 w-8 text-[#25C9D0]" />
                   </div>
-                  <p className="text-slate-500 italic text-sm">Không có thông tin cập nhật tiến độ</p>
+                  <p className="text-slate-500 italic text-sm">{t('results.sections.personalProgress.noInfo')}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -437,7 +434,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                             <div className="w-5 h-5 rounded-md bg-[#14B8A6]/10 flex items-center justify-center">
                               <CheckCircle2 className="h-3.5 w-3.5 text-[#14B8A6]" />
                             </div>
-                            Hôm qua đã làm
+                            {t('results.sections.personalProgress.yesterday')}
                           </h4>
                           {progress.yesterday.length > 0 ? (
                             <ul className="space-y-1.5 pl-7">
@@ -449,7 +446,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-slate-400 italic text-sm pl-7">Không có thông tin</p>
+                            <p className="text-slate-400 italic text-sm pl-7">{t('results.sections.personalProgress.noInfoItem')}</p>
                           )}
                         </div>
 
@@ -459,7 +456,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                             <div className="w-5 h-5 rounded-md bg-[#25C9D0]/10 flex items-center justify-center">
                               <Calendar className="h-3.5 w-3.5 text-[#25C9D0]" />
                             </div>
-                            Hôm nay làm
+                            {t('results.sections.personalProgress.today')}
                           </h4>
                           {progress.today.length > 0 ? (
                             <ul className="space-y-1.5 pl-7">
@@ -471,7 +468,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-slate-400 italic text-sm pl-7">Không có thông tin</p>
+                            <p className="text-slate-400 italic text-sm pl-7">{t('results.sections.personalProgress.noInfoItem')}</p>
                           )}
                         </div>
 
@@ -482,7 +479,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                               <div className="w-5 h-5 rounded-md bg-[#25C9D0]/10 flex items-center justify-center">
                                 <AlertCircle className="h-3.5 w-3.5 text-[#25C9D0]" />
                               </div>
-                              Vướng mắc/Blocker
+                              {t('results.sections.personalProgress.blockers')}
                             </h4>
                             <ul className="space-y-1.5 pl-7">
                               {progress.blockers.map((blocker, i) => (
@@ -509,7 +506,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             <CardHeader>
               <SectionHeader
                 icon={ListTodo}
-                title="Giao việc mới & Điều chuyển"
+                title={t('results.sections.actionItems.title')}
                 onCopy={() => handleCopy(
                   actionItems.map(item => 
                     `${item.task} - ${item.assignee}${item.dueDate ? ` (${item.dueDate})` : ''}${item.priority ? ` [${item.priority}]` : ''}`
@@ -527,7 +524,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#25C9D0]/10 flex items-center justify-center">
                     <ListTodo className="h-8 w-8 text-[#25C9D0]" />
                   </div>
-                  <p className="text-slate-500 italic text-sm">Không có công việc mới được giao</p>
+                  <p className="text-slate-500 italic text-sm">{t('results.sections.actionItems.noItems')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -551,7 +548,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                           <div className="flex flex-wrap items-center gap-2">
                             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold bg-[#25C9D0]/10 text-[#25C9D0] border border-[#25C9D0]/20">
                               <User className="h-3.5 w-3.5" />
-                              {item.assignee || 'Chưa phân công'}
+                              {item.assignee || t('results.sections.actionItems.unassigned')}
                             </div>
                             {item.dueDate && (
                               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
@@ -570,7 +567,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                             <div className="mt-3 p-3 bg-slate-50 rounded-[10px] border border-slate-200">
                               <p className="text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
                                 <Zap className="h-3.5 w-3.5 text-[#25C9D0]" />
-                                Yêu cầu kỹ thuật:
+                                {t('results.sections.actionItems.technicalNotes')}
                               </p>
                               <p className="text-sm text-slate-600 leading-relaxed">{item.technicalNotes}</p>
                             </div>
@@ -591,7 +588,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             <CardHeader>
               <SectionHeader
                 icon={Target}
-                title="Chốt quyết định"
+                title={t('results.sections.decisions.title')}
                 onCopy={() => handleCopy(keyDecisions.join('\n'), 'decisions')}
                 copyText={keyDecisions.join('\n')}
               />
@@ -602,7 +599,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#14B8A6]/10 flex items-center justify-center">
                     <Target className="h-8 w-8 text-[#14B8A6]" />
                   </div>
-                  <p className="text-slate-500 italic text-sm">Không có quyết định quan trọng nào được ghi nhận</p>
+                  <p className="text-slate-500 italic text-sm">{t('results.sections.decisions.noDecisions')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -640,12 +637,12 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
             <CardHeader>
               <SectionHeader
                 icon={Award}
-                title="Tổng kết & Bước tiếp theo"
+                title={t('results.sections.summary.title')}
                 onCopy={() => handleCopy(
-                  `Vướng mắc cần follow-up:\n${summary.blockersToFollowUp.join('\n')}\n\nCông việc ưu tiên:\n${summary.priorityTasks.join('\n')}\n\nTrách nhiệm:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`,
+                  `${t('results.sections.summary.blockersToFollowUp')}:\n${summary.blockersToFollowUp.join('\n')}\n\n${t('results.sections.summary.priorityTasks')}:\n${summary.priorityTasks.join('\n')}\n\n${t('results.sections.summary.responsibilities')}:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`,
                   'summary'
                 )}
-                copyText={`Vướng mắc cần follow-up:\n${summary.blockersToFollowUp.join('\n')}\n\nCông việc ưu tiên:\n${summary.priorityTasks.join('\n')}\n\nTrách nhiệm:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`}
+                copyText={`${t('results.sections.summary.blockersToFollowUp')}:\n${summary.blockersToFollowUp.join('\n')}\n\n${t('results.sections.summary.priorityTasks')}:\n${summary.priorityTasks.join('\n')}\n\n${t('results.sections.summary.responsibilities')}:\n${summary.responsibilities.map(r => `${r.person}: ${r.task}${r.deadline ? ` (${r.deadline})` : ''}`).join('\n')}`}
               />
             </CardHeader>
             <CardContent>
@@ -656,7 +653,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                     <div className="w-5 h-5 rounded-md bg-[#25C9D0]/10 flex items-center justify-center">
                       <AlertCircle className="h-3.5 w-3.5 text-[#25C9D0]" />
                     </div>
-                    Vướng mắc cần follow-up
+                    {t('results.sections.summary.blockersToFollowUp')}
                   </h4>
                   {summary.blockersToFollowUp.length > 0 ? (
                     <ul className="space-y-1.5 pl-7">
@@ -668,7 +665,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-slate-400 italic text-sm pl-7">Không có vướng mắc cần follow-up</p>
+                    <p className="text-slate-400 italic text-sm pl-7">{t('results.sections.summary.noBlockers')}</p>
                   )}
                 </div>
 
@@ -678,7 +675,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                     <div className="w-7 h-7 rounded-[8px] bg-[#25C9D0]/10 flex items-center justify-center">
                       <Target className="h-4 w-4 text-[#25C9D0]" />
                     </div>
-                    Công việc ưu tiên trong ngày
+                    {t('results.sections.summary.priorityTasks')}
                   </h4>
                   {summary.priorityTasks.length > 0 ? (
                     <ul className="space-y-2">
@@ -690,7 +687,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-slate-400 italic text-sm pl-9">Không có công việc ưu tiên được ghi nhận</p>
+                    <p className="text-slate-400 italic text-sm pl-9">{t('results.sections.summary.noPriorityTasks')}</p>
                   )}
                 </div>
 
@@ -700,7 +697,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                     <div className="w-7 h-7 rounded-[8px] bg-[#14B8A6]/10 flex items-center justify-center">
                       <Users className="h-4 w-4 text-[#14B8A6]" />
                     </div>
-                    Trách nhiệm & Deadline
+                    {t('results.sections.summary.responsibilities')}
                   </h4>
                   {summary.responsibilities.length > 0 ? (
                     <div className="space-y-3">
@@ -730,7 +727,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                       ))}
                     </div>
                   ) : (
-                    <p className="text-slate-400 italic text-sm pl-9">Không có trách nhiệm được ghi nhận</p>
+                    <p className="text-slate-400 italic text-sm pl-9">{t('results.sections.summary.noResponsibilities')}</p>
                   )}
                 </div>
               </div>
@@ -747,14 +744,14 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                   <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center shadow-sm">
                     <FileText className="h-5 w-5 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-bold text-slate-900">Full Transcript</CardTitle>
+                  <CardTitle className="text-xl font-bold text-slate-900">{t('results.sections.transcript.title')}</CardTitle>
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <div className="relative flex-1 sm:flex-initial">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="Tìm kiếm trong transcript..."
+                      placeholder={t('results.sections.transcript.searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 pr-9 py-2.5 border-2 border-slate-200 rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] w-full sm:w-72 transition-all bg-white"
@@ -774,7 +771,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
               {searchQuery && (
                 <p className="text-sm text-[#25C9D0] font-semibold mt-3 flex items-center gap-2">
                   <Search className="h-4 w-4" />
-                  Tìm thấy {filteredSegments.length} đoạn phù hợp
+                  {t('results.sections.transcript.foundMatches', { count: filteredSegments.length })}
                 </p>
               )}
             </CardHeader>
@@ -783,7 +780,7 @@ export default function ResultDisplay({ result, onDownloadPDF, onReset }: Result
                 {filteredSegments.length === 0 ? (
                   <div className="text-center py-12">
                     <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 italic text-sm">Không tìm thấy đoạn nào phù hợp.</p>
+                    <p className="text-slate-500 italic text-sm">{t('results.sections.transcript.noMatches')}</p>
                   </div>
                 ) : (
                   filteredSegments.map((segment, idx) => (

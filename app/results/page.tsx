@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { MeetingResult } from '@/types';
 import ResultDisplay from '@/components/ResultDisplay';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 export default function ResultsPage() {
+  const { t } = useTranslation();
   const [result, setResult] = useState<MeetingResult | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -113,7 +115,7 @@ export default function ResultsPage() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25C9D0] mx-auto"></div>
-            <p className="mt-4 text-slate-600 font-medium">Loading results...</p>
+            <p className="mt-4 text-slate-600 font-medium">{t('resultsPage.loading')}</p>
           </div>
         </div>
       </div>
@@ -131,16 +133,16 @@ export default function ResultsPage() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md glass border-[#25C9D0]/20 rounded-[16px] p-8 shadow-xl">
             <h1 className="text-2xl font-bold gradient-text mb-4">
-              No Results Found
+              {t('resultsPage.noResults')}
             </h1>
             <p className="text-slate-600 mb-6">
-              No meeting results were found. Please record a meeting using the Chrome Extension first.
+              {t('resultsPage.noResultsMessage')}
             </p>
             <a
               href="/"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#25C9D0] to-[#14B8A6] text-white rounded-lg hover:shadow-lg transition-all shadow-lg shadow-[#25C9D0]/30"
             >
-              Go to Home
+              {t('resultsPage.goToHome')}
             </a>
           </div>
         </div>
@@ -162,10 +164,10 @@ export default function ResultsPage() {
           {/* Header Section */}
           <div className="glass border-[#25C9D0]/20 rounded-[16px] p-6 shadow-xl">
             <h1 className="text-3xl font-bold gradient-text mb-2">
-              Meeting Results
+              {t('resultsPage.title')}
             </h1>
             <p className="text-slate-600">
-              Recorded via Chrome Extension
+              {t('resultsPage.subtitle')}
             </p>
           </div>
 
@@ -182,7 +184,7 @@ export default function ResultsPage() {
               href="/"
               className="inline-flex items-center gap-2 px-6 py-3 border-2 border-slate-200 text-slate-700 rounded-lg hover:border-[#25C9D0]/50 hover:bg-[#25C9D0]/5 transition-all font-medium"
             >
-              Back to Home
+              {t('resultsPage.backToHome')}
             </a>
           </div>
         </div>

@@ -6,8 +6,10 @@ import { Sparkles, History, XCircle, ArrowLeft, Zap, Globe, FileText } from 'luc
 import FileUpload from '@/components/FileUpload';
 import ProcessingStatus from '@/components/ProcessingStatus';
 import ResultDisplay from '@/components/ResultDisplay';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { MeetingResult, ProcessingStep } from '@/types';
 import { estimateCost } from '@/lib/utils';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 type AppState = 'upload' | 'processing' | 'complete';
 type Language = 'vi' | 'en' | 'ja';
@@ -26,6 +28,7 @@ const languages = [
 ];
 
 export default function Home() {
+  const { t } = useTranslation();
   const [appState, setAppState] = useState<AppState>('upload');
   const [steps, setSteps] = useState<ProcessingStep[]>(initialSteps);
   const [result, setResult] = useState<MeetingResult | null>(null);
@@ -216,24 +219,25 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold gradient-text flex items-center gap-2">
-                  MeetingMind AI
+                  {t('header.appName')}
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#25C9D0]/10 text-[#25C9D0] border border-[#25C9D0]/20">
                     v2.0
                   </span>
                 </h1>
                 <p className="text-sm text-slate-600 hidden sm:block mt-0.5 font-medium">
-                  Transform meetings into actionable insights instantly
+                  {t('header.tagline')}
                 </p>
               </div>
             </div>
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <LanguageSwitcher />
               <Link
                 href="/history"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all shadow-lg hover:shadow-xl shadow-[#25C9D0]/30"
               >
                 <History className="w-4 h-4" />
-                History
+                {t('header.history')}
               </Link>
             </div>
           </div>
@@ -265,14 +269,14 @@ export default function Home() {
                       <XCircle className="h-6 w-6 text-red-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-red-900 mb-2 text-lg">Processing Error</h3>
+                      <h3 className="font-bold text-red-900 mb-2 text-lg">{t('errors.processingError')}</h3>
                       <p className="text-sm text-red-700 mb-4">{error}</p>
                       <button
                         onClick={handleReset}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-red-300 rounded-[10px] text-sm font-semibold text-red-700 hover:bg-red-50 transition-all"
                       >
                         <ArrowLeft className="h-4 w-4" />
-                        Try Again
+                        {t('common.tryAgain')}
                       </button>
                     </div>
                   </div>
@@ -305,9 +309,9 @@ export default function Home() {
                 <Zap className="h-6 w-6 text-[#25C9D0]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">AI-Powered</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('footer.features.aiPowered.title')}</h4>
                 <p className="text-sm text-slate-600">
-                  Using OpenAI Whisper & GPT-4 for accurate transcription and intelligent analysis
+                  {t('footer.features.aiPowered.description')}
                 </p>
               </div>
             </div>
@@ -318,9 +322,9 @@ export default function Home() {
                 <Globe className="h-6 w-6 text-[#25C9D0]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">Multi-Language</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('footer.features.multiLanguage.title')}</h4>
                 <p className="text-sm text-slate-600">
-                  Supports Vietnamese, English, and Japanese with native language processing
+                  {t('footer.features.multiLanguage.description')}
                 </p>
               </div>
             </div>
@@ -331,9 +335,9 @@ export default function Home() {
                 <FileText className="h-6 w-6 text-[#25C9D0]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">PDF Reports</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('footer.features.pdfReports.title')}</h4>
                 <p className="text-sm text-slate-600">
-                  Generate professional PDF reports with structured insights and action items
+                  {t('footer.features.pdfReports.description')}
                 </p>
               </div>
             </div>
@@ -342,10 +346,10 @@ export default function Home() {
           {/* Footer Bottom */}
           <div className="text-center pt-8 border-t border-slate-200">
             <p className="text-sm text-slate-600 mb-2">
-              <span className="font-semibold text-[#25C9D0]">Cost-effective:</span> ~$0.40 per 60-minute meeting
+              <span className="font-semibold text-[#25C9D0]">{t('footer.costEffective').split(':')[0]}:</span> {t('footer.costEffective').split(':')[1]}
             </p>
             <p className="text-xs text-slate-500">
-              Built for efficient meeting documentation and team collaboration
+              {t('footer.tagline')}
             </p>
           </div>
         </footer>

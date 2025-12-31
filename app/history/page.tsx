@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, FileText, Filter, Download, Search, ChevronDown, Sparkles, History } from 'lucide-react';
 import Link from 'next/link';
 import MeetingCard from '@/components/MeetingCard';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Meeting {
   id: string;
@@ -21,6 +23,7 @@ interface Meeting {
 }
 
 export default function HistoryPage() {
+  const { t } = useTranslation();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -130,21 +133,22 @@ export default function HistoryPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold gradient-text flex items-center gap-2">
-                  Meeting History
+                  {t('history.title')}
                 </h1>
                 <p className="text-sm text-slate-600 hidden sm:block mt-0.5 font-medium">
-                  View and manage all your recorded meetings
+                  {t('history.subtitle')}
                 </p>
               </div>
             </div>
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <LanguageSwitcher />
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#25C9D0] text-white hover:bg-[#1BA1A8] text-sm font-semibold transition-all shadow-lg hover:shadow-xl shadow-[#25C9D0]/30"
               >
                 <Sparkles className="w-4 h-4" />
-                New MeetingMind
+                {t('header.newMeeting')}
               </Link>
             </div>
           </div>
@@ -160,14 +164,14 @@ export default function HistoryPage() {
               <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[#25C9D0] to-[#14B8A6] flex items-center justify-center">
                 <Filter className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-xl font-bold gradient-text">Filters</h2>
+              <h2 className="text-xl font-bold gradient-text">{t('history.filters.title')}</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Search */}
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Search
+                  {t('history.filters.search')}
                 </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -175,7 +179,7 @@ export default function HistoryPage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by title, participants, or content..."
+                    placeholder={t('history.filters.searchPlaceholder')}
                     className="w-full pl-10 pr-4 py-2.5 border-2 border-slate-200 rounded-[10px] focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
                   />
                 </div>
@@ -184,7 +188,7 @@ export default function HistoryPage() {
               {/* Start Date */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Start Date
+                  {t('history.filters.startDate')}
                 </label>
                 <input
                   type="date"
@@ -197,7 +201,7 @@ export default function HistoryPage() {
               {/* End Date */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  End Date
+                  {t('history.filters.endDate')}
                 </label>
                 <input
                   type="date"
@@ -210,39 +214,39 @@ export default function HistoryPage() {
               {/* Source Filter */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Source
+                  {t('history.filters.source')}
                 </label>
                 <select
                   value={sourceFilter}
                   onChange={(e) => setSourceFilter(e.target.value)}
                   className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-[10px] focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
                 >
-                  <option value="all">All Sources</option>
-                  <option value="upload">File Upload</option>
-                  <option value="extension">Extension</option>
+                  <option value="all">{t('history.filters.allSources')}</option>
+                  <option value="upload">{t('history.filters.fileUpload')}</option>
+                  <option value="extension">{t('history.filters.extension')}</option>
                 </select>
               </div>
             </div>
 
             {/* Sort Options */}
             <div className="flex flex-wrap items-center gap-4 mt-6 pt-6 border-t-2 border-slate-200">
-              <span className="text-sm font-semibold text-slate-700">Sort by:</span>
+              <span className="text-sm font-semibold text-slate-700">{t('history.filters.sortBy')}</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-2 border-2 border-slate-200 rounded-[10px] text-sm focus:ring-2 focus:ring-[#25C9D0] focus:border-[#25C9D0] transition-all"
               >
-                <option value="meetingDate">Meeting Date</option>
-                <option value="createdAt">Created Date</option>
-                <option value="duration">Duration</option>
-                <option value="title">Title</option>
+                <option value="meetingDate">{t('history.filters.meetingDate')}</option>
+                <option value="createdAt">{t('history.filters.createdDate')}</option>
+                <option value="duration">{t('history.filters.duration')}</option>
+                <option value="title">{t('history.filters.title')}</option>
               </select>
               
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
                 className="px-4 py-2 border-2 border-slate-200 rounded-[10px] text-sm font-medium hover:bg-[#25C9D0]/10 hover:border-[#25C9D0]/50 transition-all"
               >
-                {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                {sortOrder === 'asc' ? t('common.ascending') : t('common.descending')}
               </button>
 
               {(startDate || endDate || sourceFilter !== 'all' || searchQuery) && (
@@ -255,7 +259,7 @@ export default function HistoryPage() {
                   }}
                   className="ml-auto text-sm font-semibold text-[#25C9D0] hover:text-[#1BA1A8] transition-colors"
                 >
-                  Clear Filters
+                  {t('history.filters.clearFilters')}
                 </button>
               )}
             </div>
@@ -273,7 +277,7 @@ export default function HistoryPage() {
                 onClick={fetchMeetings}
                 className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:shadow-lg transition-all shadow-lg"
               >
-                Retry
+                {t('common.retry')}
               </button>
             </div>
           ) : filteredMeetings.length === 0 ? (
@@ -281,25 +285,25 @@ export default function HistoryPage() {
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#25C9D0]/10 to-[#14B8A6]/10 flex items-center justify-center">
                 <FileText className="w-10 h-10 text-[#25C9D0]" />
               </div>
-              <h3 className="text-xl font-bold gradient-text mb-3">No meetings found</h3>
+              <h3 className="text-xl font-bold gradient-text mb-3">{t('history.empty.title')}</h3>
               <p className="text-slate-600 mb-6 max-w-md mx-auto">
                 {searchQuery || startDate || endDate || sourceFilter !== 'all'
-                  ? 'Try adjusting your filters'
-                  : 'Start by uploading a recording or using the Chrome extension'}
+                  ? t('history.empty.message')
+                  : t('history.empty.messageNoFilters')}
               </p>
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#25C9D0] to-[#14B8A6] text-white rounded-lg hover:shadow-lg transition-all shadow-lg shadow-[#25C9D0]/30"
               >
                 <Sparkles className="w-4 h-4" />
-                Process Your First Meeting
+                {t('history.empty.cta')}
               </Link>
             </div>
           ) : (
             <div className="space-y-6 fade-in-up">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-slate-600">
-                  Showing {filteredMeetings.length} meeting{filteredMeetings.length !== 1 ? 's' : ''}
+                  {t('history.showing', { count: filteredMeetings.length, plural: filteredMeetings.length !== 1 ? 's' : '' })}
                 </p>
               </div>
 

@@ -6,8 +6,10 @@ import { ArrowLeft, Calendar, Clock, Users, FileText, Zap } from 'lucide-react';
 import ResultDisplay from '@/components/ResultDisplay';
 import { MeetingResult } from '@/types';
 import { formatDuration } from '@/lib/utils';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 export default function MeetingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [meeting, setMeeting] = useState<MeetingResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#25C9D0] mx-auto"></div>
-            <p className="mt-4 text-slate-600 font-medium">Loading meeting...</p>
+            <p className="mt-4 text-slate-600 font-medium">{t('meetingDetail.loading')}</p>
           </div>
         </div>
       </div>
@@ -120,15 +122,15 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md glass border-[#25C9D0]/20 rounded-[16px] p-8 shadow-xl">
             <h1 className="text-2xl font-bold gradient-text mb-4">
-              Meeting Not Found
+              {t('meetingDetail.notFound')}
             </h1>
-            <p className="text-slate-600 mb-6">{error || 'This meeting could not be found.'}</p>
+            <p className="text-slate-600 mb-6">{error || t('meetingDetail.notFoundMessage')}</p>
             <button
               onClick={() => router.push('/history')}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#25C9D0] to-[#14B8A6] text-white rounded-lg hover:shadow-lg transition-all shadow-lg shadow-[#25C9D0]/30"
             >
               <ArrowLeft className="w-5 h-5" />
-              Back to History
+              {t('meetingDetail.backToHistory')}
             </button>
           </div>
         </div>
@@ -162,7 +164,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                 className="inline-flex items-center gap-2 text-slate-600 hover:text-[#25C9D0] transition-colors self-start group"
               >
                 <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                <span className="font-medium">Back to History</span>
+                <span className="font-medium">{t('meetingDetail.backToHistory')}</span>
               </button>
 
               {/* Meeting Title */}
@@ -202,7 +204,7 @@ export default function MeetingDetailPage({ params }: { params: Promise<{ id: st
                       ? 'bg-purple-100 text-purple-700 border-purple-200'
                       : 'bg-[#25C9D0]/10 text-[#25C9D0] border-[#25C9D0]/20'
                   }`}>
-                    {source === 'extension' ? 'Extension' : 'Upload'}
+                    {source === 'extension' ? t('meetingDetail.source.extension') : t('meetingDetail.source.upload')}
                   </span>
                 </div>
               </div>
