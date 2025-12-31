@@ -13,14 +13,16 @@ MeetingMind AI is an intelligent meeting assistant that automatically transcribe
 ## Key Features
 
 - **Upload & Analyze Meeting Recordings** - Support for MP3, WAV, M4A, MP4, WebM formats (up to 25MB)
-- **AI Transcription** - Powered by OpenAI Whisper with timestamp granularity
-- **AI Analysis** - GPT-4 extracts:
-  - 5-7 key summary points
-  - Action items with assignees (auto-detected from transcript)
-  - Key decisions made
-  - Participant list
+- **AI Transcription** - Powered by OpenAI Whisper with timestamp granularity and segment-level transcription
+- **Comprehensive AI Analysis** - GPT-4 extracts structured meeting insights:
+  - **Attendance Tracking** - Present and absent members with reasons
+  - **Personal Progress Updates** - Yesterday's completed work, today's planned tasks, and blockers for each member
+  - **Workload Assessment** - Automatic workload status (overloaded/normal/free) for each team member
+  - **Action Items** - Tasks with assignees, due dates, priority levels, and technical notes
+  - **Key Decisions** - Important decisions made during the meeting
+  - **Meeting Summary** - Blockers to follow up, priority tasks, and responsibilities with deadlines
 - **PDF Report Generation** - Download professional formatted PDFs with all meeting details
-- **Meeting History** - Browse, search, and filter past meetings with full transcript access
+- **Meeting History** - Browse, search, filter, and sort past meetings with full transcript access and detailed view
 - **Chrome Extension** - Real-time audio capture and transcription for Google Meet
 - **Multi-language Support** - UI available in English, Vietnamese, and Japanese (transcript language is separate from UI language)
 
@@ -90,6 +92,24 @@ MeetingMind AI is an intelligent meeting assistant that automatically transcribe
 7. **Open your browser:**
 
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Usage
+
+1. **Upload a meeting recording** - Drag and drop or select an audio/video file
+2. **Select transcript language** - Choose the language of the meeting (English, Vietnamese, or Japanese)
+3. **Wait for processing** - The app will:
+   - Transcribe audio using Whisper AI
+   - Analyze content with GPT-4 to extract structured insights
+   - Save to database automatically
+4. **Review results** - Browse through 6 detailed tabs:
+   - **Overview** - Attendance and workload status
+   - **Progress** - Personal updates from each team member
+   - **Tasks** - Action items with assignees and deadlines
+   - **Decisions** - Key decisions made
+   - **Summary** - Blockers, priorities, and responsibilities
+   - **Transcript** - Full transcript with timestamps and search functionality
+5. **Download PDF** - Generate a professional report for sharing
+6. **View history** - Access past meetings with filtering and search capabilities
 
 ## Environment Variables
 
