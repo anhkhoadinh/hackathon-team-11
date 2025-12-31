@@ -10,6 +10,7 @@ let recordingStartTime = null;
 let transcriptSegments = [];
 let injectedScriptReady = false;
 let recordingData = null;
+let transcriptLanguage = 'en'; // Default language
 
 // Inject recorder script into page context
 function injectRecorderScript() {
@@ -35,6 +36,10 @@ window.addEventListener("message", (event) => {
     console.log("Recording started successfully");
     // Notify background for badge
     chrome.runtime.sendMessage({ action: "startRecording" });
+    // Start timer only after recording is actually started (user has allowed)
+    recordingStartTime = Date.now();
+    startTimer();
+    updateStatus("Recording...", "recording");
   } else if (action === "RECORDING_COMPLETE") {
     console.log("Recording complete, received data");
     recordingData = data;
@@ -46,11 +51,19 @@ window.addEventListener("message", (event) => {
     showError(data.error);
     updateStatus("Ready to record", "");
     isRecording = false;
+    recordingStartTime = null;
     document.getElementById("meeting-ai-start").style.display = "block";
     document.getElementById("meeting-ai-recording-controls").style.display =
       "none";
     document.getElementById("meeting-ai-resume").style.display = "none";
+    // Show language selector again
+    const languageSelector = document.querySelector(".meeting-ai-language-selector");
+    if (languageSelector) {
+      languageSelector.style.display = "flex";
+    }
     stopTimer();
+    // Reset timer display
+    document.getElementById("meeting-ai-timer").textContent = "00:00";
   }
 });
 
@@ -68,13 +81,21 @@ function createOverlay() {
   overlay.id = "meeting-ai-overlay";
   overlay.innerHTML = `
     <div class="meeting-ai-header">
-      <span class="meeting-ai-title">Meeting AI</span>
-      <button id="meeting-ai-minimize" class="meeting-ai-btn-icon">X</button>
+      <span class="meeting-ai-title">MeetingMind AI</span>
+      <button id="meeting-ai-minimize" class="meeting-ai-btn-icon">-</button>
     </div>
     <div class="meeting-ai-content">
       <div class="meeting-ai-status">
         <span id="meeting-ai-status-text">Ready to record</span>
         <span id="meeting-ai-timer">00:00</span>
+      </div>
+      <div class="meeting-ai-language-selector" style="margin-bottom: 12px;">
+        <label for="meeting-ai-language" class="meeting-ai-language-label">Transcript Language:</label>
+        <select id="meeting-ai-language" class="meeting-ai-language-select">
+          <option value="en">🇺🇸 English</option>
+          <option value="vi">🇻🇳 Tiếng Việt</option>
+          <option value="ja">🇯🇵 日本語</option>
+        </select>
       </div>
       <div class="meeting-ai-controls">
         <button id="meeting-ai-start" class="meeting-ai-btn meeting-ai-btn-primary">
@@ -96,6 +117,9 @@ function createOverlay() {
         <div class="meeting-ai-transcript-header">Live Transcript</div>
         <div id="meeting-ai-transcript-content" class="meeting-ai-transcript-content"></div>
       </div>
+      <div id="meeting-ai-results" class="meeting-ai-results" style="display: none;">
+        <div id="meeting-ai-results-content" class="meeting-ai-results-content"></div>
+      </div>
       <div id="meeting-ai-error" class="meeting-ai-error" style="display: none;"></div>
     </div>
   `;
@@ -107,6 +131,9 @@ function createOverlay() {
 
   // Add event listeners
   setupEventListeners();
+  
+  // Load saved language preference
+  loadLanguagePreference();
 }
 
 // Make overlay draggable
@@ -150,12 +177,42 @@ function setupEventListeners() {
   const resumeBtn = document.getElementById("meeting-ai-resume");
   const stopBtn = document.getElementById("meeting-ai-stop");
   const minimizeBtn = document.getElementById("meeting-ai-minimize");
+  const languageSelect = document.getElementById("meeting-ai-language");
 
   startBtn?.addEventListener("click", startRecording);
   pauseBtn?.addEventListener("click", pauseRecording);
   resumeBtn?.addEventListener("click", resumeRecording);
   stopBtn?.addEventListener("click", stopRecording);
   minimizeBtn?.addEventListener("click", toggleMinimize);
+  languageSelect?.addEventListener("change", (e) => {
+    transcriptLanguage = e.target.value;
+    saveLanguagePreference();
+  });
+}
+
+// Load language preference from storage
+async function loadLanguagePreference() {
+  try {
+    const result = await chrome.storage.local.get("transcriptLanguage");
+    if (result.transcriptLanguage && ['en', 'vi', 'ja'].includes(result.transcriptLanguage)) {
+      transcriptLanguage = result.transcriptLanguage;
+      const languageSelect = document.getElementById("meeting-ai-language");
+      if (languageSelect) {
+        languageSelect.value = transcriptLanguage;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load language preference:", error);
+  }
+}
+
+// Save language preference to storage
+async function saveLanguagePreference() {
+  try {
+    await chrome.storage.local.set({ transcriptLanguage });
+  } catch (error) {
+    console.error("Failed to save language preference:", error);
+  }
 }
 
 // Start recording
@@ -170,18 +227,23 @@ async function startRecording() {
     // Send message to injected script to start recording
     window.postMessage({ action: "START_RECORDING" }, "*");
 
-    // Update state
+    // Update state (but don't start timer yet - wait for RECORDING_STARTED event)
     isRecording = true;
-    recordingStartTime = Date.now();
 
     // Update UI
     document.getElementById("meeting-ai-start").style.display = "none";
     document.getElementById("meeting-ai-recording-controls").style.display =
       "flex";
     document.getElementById("meeting-ai-resume").style.display = "none";
-    document.getElementById("meeting-ai-transcript").style.display = "block";
-    updateStatus("Recording...", "recording");
-    startTimer();
+    // Hide language selector during recording
+    const languageSelector = document.querySelector(".meeting-ai-language-selector");
+    if (languageSelector) {
+      languageSelector.style.display = "none";
+    }
+    // Don't show transcript section during recording
+    document.getElementById("meeting-ai-transcript").style.display = "none";
+    // Don't update status to "Recording..." yet - wait for RECORDING_STARTED
+    // Don't start timer yet - wait for user to allow permissions
 
     console.log("Recording request sent to injected script");
   } catch (error) {
@@ -209,6 +271,20 @@ async function startRecording() {
 
     showError(errorMessage);
     updateStatus("Ready to record", "");
+    isRecording = false;
+    recordingStartTime = null;
+    // Reset UI
+    document.getElementById("meeting-ai-start").style.display = "block";
+    document.getElementById("meeting-ai-recording-controls").style.display = "none";
+    document.getElementById("meeting-ai-resume").style.display = "none";
+    // Show language selector again
+    const languageSelector = document.querySelector(".meeting-ai-language-selector");
+    if (languageSelector) {
+      languageSelector.style.display = "flex";
+    }
+    stopTimer();
+    // Reset timer display
+    document.getElementById("meeting-ai-timer").textContent = "00:00";
   }
 }
 
@@ -307,6 +383,7 @@ async function processRecording() {
     // Send to transcription API
     const formData = new FormData();
     formData.append("file", audioFile);
+    formData.append("language", transcriptLanguage);
 
     const transcribeResponse = await fetch(`${API_BASE_URL}/transcribe`, {
       method: "POST",
@@ -320,8 +397,8 @@ async function processRecording() {
     const transcriptData = await transcribeResponse.json();
     console.log("Transcription complete:", transcriptData);
 
-    // Display transcript
-    displayTranscript(transcriptData);
+    // Don't display transcript in overlay - it will be shown in detail page
+    // displayTranscript(transcriptData);
 
     // Analyze with GPT-4
     updateStatus("Analyzing content...", "processing");
@@ -333,6 +410,7 @@ async function processRecording() {
       },
       body: JSON.stringify({
         transcript: transcriptData.text,
+        language: transcriptLanguage,
       }),
     });
 
@@ -433,75 +511,32 @@ function displayTranscript(transcriptData) {
 
 // Display summary
 function displaySummary(analysis, transcript, meetingId) {
-  const content = document.getElementById("meeting-ai-transcript-content");
+  // Hide transcript section
+  const transcriptSection = document.getElementById("meeting-ai-transcript");
+  if (transcriptSection) {
+    transcriptSection.style.display = "none";
+  }
 
-  const summaryDiv = document.createElement("div");
-  summaryDiv.className = "meeting-ai-summary";
-
-  // Handle both old format (array) and new format (object)
-  const summaryPoints = Array.isArray(analysis.summary)
-    ? analysis.summary
-    : [
-        ...(analysis.summary?.priorityTasks || []),
-        ...(analysis.summary?.blockersToFollowUp || []).map((b) => `?? ${b}`),
-      ];
-
-  summaryDiv.innerHTML = `
-    <div class="meeting-ai-summary-section">
-      <h4>Summary</h4>
-      <ul>
-        ${
-          summaryPoints.length > 0
-            ? summaryPoints.map((point) => `<li>${point}</li>`).join("")
-            : "<li>No summary available</li>"
-        }
-      </ul>
-    </div>
-    <div class="meeting-ai-summary-section">
-      <h4>Action Items (${analysis.actionItems?.length || 0})</h4>
-      <ul>
-        ${
-          analysis.actionItems && analysis.actionItems.length > 0
-            ? analysis.actionItems
-                .map(
-                  (item) =>
-                    `<li>${item.task} - <strong>${item.assignee}</strong></li>`
-                )
-                .join("")
-            : "<li>No action items</li>"
-        }
-      </ul>
-    </div>
-    ${
-      analysis.keyDecisions && analysis.keyDecisions.length > 0
-        ? `
-    <div class="meeting-ai-summary-section">
-      <h4>Key Decisions</h4>
-      <ul>
-        ${analysis.keyDecisions
-          .map((decision) => `<li>${decision}</li>`)
-          .join("")}
-      </ul>
-    </div>
-    `
-        : ""
-    }
-    <div class="meeting-ai-summary-section" style="text-align: center; margin-top: 20px;">
-      <button id="meeting-ai-view-full" class="meeting-ai-btn meeting-ai-btn-primary" style="width: 100%;">
-        View Full Results & Download PDF
+  // Show results section with view history button
+  const resultsSection = document.getElementById("meeting-ai-results");
+  const resultsContent = document.getElementById("meeting-ai-results-content");
+  
+  if (resultsSection && resultsContent) {
+    resultsContent.innerHTML = `
+      <button id="meeting-ai-view-full" class="meeting-ai-btn meeting-ai-btn-primary" style="width: 100%; padding: 12px 20px; font-size: 14px;">
+        View Analyst Report
       </button>
-    </div>
-  `;
+    `;
+    
+    resultsSection.style.display = "block";
 
-  content.appendChild(summaryDiv);
-  content.scrollTop = content.scrollHeight;
-
-  // Add click handler for "View Full Results" button
-  const viewFullBtn = document.getElementById("meeting-ai-view-full");
-  if (viewFullBtn) {
-    viewFullBtn.addEventListener("click", () => {
-      openFullResults(meetingId);
-    });
+    // Add click handler for "View History" button
+    const viewFullBtn = document.getElementById("meeting-ai-view-full");
+    if (viewFullBtn) {
+      viewFullBtn.addEventListener("click", () => {
+        openFullResults(meetingId);
+      });
+    }
   }
 }
 
@@ -569,9 +604,11 @@ function toggleMinimize() {
   const btn = document.getElementById("meeting-ai-minimize");
 
   if (content.style.display === "none") {
+    // Expand: show content and display -
     content.style.display = "block";
-    btn.textContent = "?";
+    btn.textContent = "-";
   } else {
+    // Minimize: hide content and display +
     content.style.display = "none";
     btn.textContent = "+";
   }
