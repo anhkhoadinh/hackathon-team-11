@@ -7,23 +7,30 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   const doc = new jsPDF();
   let yPosition = 20;
 
-  // Header
+  // Header Section
   doc.setFontSize(20);
   doc.setFont('helvetica', 'bold');
-  doc.text('Daily Meeting Analysis Report', 20, yPosition);
+  doc.text('Meeting Analysis Report', 20, yPosition);
   
-  yPosition += 10;
+  yPosition += 12;
+  
+  // Meeting Information
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.text(`File: ${result.metadata.fileName}`, 20, yPosition);
-  yPosition += 5;
+  yPosition += 6;
   doc.text(`Date: ${new Date(result.metadata.processedAt).toLocaleString()}`, 20, yPosition);
-  yPosition += 5;
+  yPosition += 6;
   doc.text(`Duration: ${formatDuration(result.transcript.duration)}`, 20, yPosition);
-  yPosition += 5;
+  yPosition += 6;
   doc.text(`Estimated Cost: $${result.metadata.estimatedCost.toFixed(2)}`, 20, yPosition);
   
-  yPosition += 15;
+  yPosition += 12;
+  
+  // Divider line
+  doc.setDrawColor(200, 200, 200);
+  doc.line(20, yPosition, 190, yPosition);
+  yPosition += 10;
 
   const analysis = result.analysis;
 
@@ -31,7 +38,7 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('1. Opening & Attendance', 20, yPosition);
-  yPosition += 10;
+  yPosition += 12;
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
@@ -78,7 +85,7 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('2. Personal Progress Updates', 20, yPosition);
-  yPosition += 10;
+  yPosition += 12;
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
@@ -162,7 +169,7 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('3. Workload Assessment', 20, yPosition);
-  yPosition += 10;
+  yPosition += 12;
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
@@ -200,7 +207,7 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('4. New Tasks & Task Reallocation', 20, yPosition);
-  yPosition += 10;
+  yPosition += 12;
 
   if (analysis.actionItems && analysis.actionItems.length > 0) {
     const tableData = analysis.actionItems.map(item => [
@@ -236,7 +243,7 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('5. Key Decisions', 20, yPosition);
-  yPosition += 8;
+  yPosition += 12;
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
@@ -271,7 +278,7 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('6. Summary & Next Steps', 20, yPosition);
-  yPosition += 10;
+  yPosition += 12;
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
@@ -365,66 +372,6 @@ export function generateMeetingPDF(result: MeetingResult): jsPDF {
   }
 
   yPosition += 10;
-
-  // Participants Section (legacy support)
-  if (yPosition > 260) {
-    doc.addPage();
-    yPosition = 20;
-  }
-
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Participants', 20, yPosition);
-  yPosition += 8;
-
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  const participants = analysis.participants || attendance.present || [];
-  if (participants.length > 0) {
-    doc.text(participants.join(', '), 20, yPosition);
-    yPosition += 15;
-  } else {
-    doc.setFont('helvetica', 'italic');
-    doc.text('No participants detected', 20, yPosition);
-    yPosition += 15;
-  }
-
-  // Full Transcript Section
-  doc.addPage();
-  yPosition = 20;
-  
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Full Transcript', 20, yPosition);
-  yPosition += 10;
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-
-  result.transcript.segments.forEach((segment) => {
-    const timestamp = `[${formatTimestamp(segment.start)}]`;
-    const lines = doc.splitTextToSize(segment.text, 150);
-    
-    if (yPosition > 270) {
-      doc.addPage();
-      yPosition = 20;
-    }
-
-    doc.setFont('helvetica', 'bold');
-    doc.text(timestamp, 20, yPosition);
-    doc.setFont('helvetica', 'normal');
-    
-    lines.forEach((line: string, index: number) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      doc.text(line, index === 0 ? 45 : 20, yPosition);
-      yPosition += 5;
-    });
-    
-    yPosition += 3;
-  });
 
   return doc;
 }

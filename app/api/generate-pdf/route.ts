@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateMeetingPDF } from '@/lib/pdf-generator';
 import { MeetingResult } from '@/types';
+import { convertToEnglishOnly } from '@/lib/utils';
 
 export const runtime = 'nodejs';
 
@@ -18,8 +19,19 @@ export async function POST(request: NextRequest) {
 
     console.log('Generating PDF for:', body.metadata.fileName);
 
-    // Generate PDF
-    const pdf = generateMeetingPDF(body);
+    // Get language from request body if provided (optional)
+    // This allows caller to specify language to skip translation if already English
+    const language = (body as any).language as string | undefined;
+
+    // Convert all content to English-only format
+    // Analysis will be translated to English using GPT-4 (only if not already English)
+    // Transcript will be sanitized to ASCII-safe format
+    // This ensures PDF generation never fails due to font encoding issues
+    // This is a deliberate design choice - PDFs are always in English
+    const englishOnlyData = await convertToEnglishOnly(body, language);
+
+    // Generate PDF with English-only data
+    const pdf = generateMeetingPDF(englishOnlyData);
     
     // Convert to buffer
     const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
